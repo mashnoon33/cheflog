@@ -16,7 +16,16 @@ import { api } from "@/trpc/react"
 import { Home, Plus, BookOpen } from "lucide-react"
 import { useEffect } from "react"
 import { BlogSwitcher } from "@/components/blog-switcher"
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation";
+import { Badge } from "./ui/badge"
+
+function VersionBadge({ version }: { version: number }) {
+  return (
+    <Badge variant="outline" className="px-2 mx-0">
+      {version}
+    </Badge>
+  )
+}
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = useSession()
@@ -54,7 +63,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     blogId: recipe.blogId,
     name: recipe.metadata?.name || "Untitled Recipe", 
     url: `/admin/${activeBlogId}/${recipe.id}`,
-    icon: BookOpen,
+    icon: <VersionBadge version={recipe.version || 1} />
   }))
 
   const handleBlogChange = (blogId: string) => {

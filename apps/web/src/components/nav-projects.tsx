@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/sidebar"
 import { api } from "@/trpc/react"
 import { toast } from "sonner"
+import { ReactElement } from "react"
 
 export function NavRecipies({
   recipes,
@@ -37,7 +38,7 @@ export function NavRecipies({
     blogId: string
     name: string
     url: string
-    icon: LucideIcon
+    icon: ReactElement
   }[]
 }) {
   const { isMobile } = useSidebar()
@@ -59,7 +60,7 @@ export function NavRecipies({
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild isActive={pathname.includes(item.url)}>
               <div className="cursor-pointer" onClick={() => router.push(item.url)}>
-                <item.icon />
+                {item.icon}
                 <span>{item.name}</span>
               </div>
             </SidebarMenuButton>
