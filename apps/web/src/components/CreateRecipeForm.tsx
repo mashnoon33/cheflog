@@ -2,20 +2,15 @@
 import RecipeEditor from '@/components/editor/monaco';
 import { defaultRecipe } from '@/components/editor/monaco/const';
 import { RecipeComponent } from '@/components/recipie';
+import { Button } from '@/components/ui/button';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
+import type { AppRouter } from '@/server/api/root';
+import { api } from '@/trpc/react';
 import { parseRecipe } from "@repo/parser";
+import type { inferRouterOutputs } from '@trpc/server';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import { parseFrontmatter } from '@/components/editor/monaco/faux-language-server/validators';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { api } from '@/trpc/react';
-import { Loader2 } from "lucide-react";
 import { toast } from 'sonner';
-import { Shell } from '@/app/_components/shell';
-import type { AppRouter } from '@/server/api/root';
-import type { inferRouterOutputs } from '@trpc/server';
 
 type RouterOutputs = inferRouterOutputs<AppRouter>;
 type Recipe = RouterOutputs["recipe"]["getById"];
@@ -84,47 +79,11 @@ export function CreateRecipeForm({ mode = 'create', initialRecipe, blogId }: Cre
             </ResizablePanel>
             <ResizableHandle withHandle />
             <ResizablePanel defaultSize={70}>
-                <Shell>
                 {/* Preview Section */}
-                <div className="h-[calc(100vh-67px)] flex-1 flex flex-row overflow-scroll p-6 bg-white">
-                    <div className="prose prose-sm max-w-none dark:prose-invert">
-                        <Tabs defaultValue="preview" className="w-full">
-                            <div className='flex w-full justify-between'>
-                                <TabsList className="mb-4">
-                                    <TabsTrigger value="preview">Preview</TabsTrigger>
-                                    <TabsTrigger value="markdown">Markdown</TabsTrigger>
-                                    <TabsTrigger value="json">JSON</TabsTrigger>
-                                </TabsList>
-                                <Button 
-                                    onClick={handlePublish} 
-                                    disabled={isCreating || isUpdating || !recipe.trim()}
-                                >
-                                    {isCreating || isUpdating ? (
-                                        <>
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            {mode === 'edit' ? 'Updating...' : 'Publishing...'}
-                                        </>
-                                    ) : (
-                                        mode === 'edit' ? 'Update' : 'Publish'
-                                    )}
-                                </Button>
-                            </div>
-                            <TabsContent value="preview">
-                                <RecipeComponent recipe={parseRecipe(recipe)} />
-                            </TabsContent>
-                            <TabsContent value="markdown">
-                                <ReactMarkdown>{recipe}</ReactMarkdown>
-                            </TabsContent>
-                            <TabsContent value="json" className="w-full">
-                                <div className='w-full overflow-x-auto'>
-                                    <pre className="whitespace-pre-wrap">{JSON.stringify(parseFrontmatter(recipe), null, 2)}</pre>
-                                    <pre className="whitespace-pre-wrap">{JSON.stringify(parseRecipe(recipe), null, 2)}</pre>
-                                </div>
-                            </TabsContent>
-                        </Tabs>
-                    </div>
+                <div className="h-screen flex-1 flex flex-col overflow-scroll p-6 bg-white">
+                    <Button variant="outline" onClick={handlePublish}>Update</Button>
+                <RecipeComponent recipe={parseRecipe(recipe)} version={initialRecipe?.version ?? 1} />
                 </div>
-                </Shell>
             </ResizablePanel>
         </ResizablePanelGroup>
     );

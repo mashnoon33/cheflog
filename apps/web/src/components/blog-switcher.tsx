@@ -28,7 +28,7 @@ export function BlogSwitcher({
   blogs: {
     name: string
     logo: React.ElementType
-    plan: string
+    subtitle: string
   }[]
   onBlogChange: (blogId: string) => void
   activeBlogId: string
@@ -57,7 +57,7 @@ export function BlogSwitcher({
                     <span className="truncate font-semibold">
                       {activeBlog.name}
                     </span>
-                    <span className="truncate text-xs">{activeBlog.plan}</span>
+                    <span className="truncate text-xs">{activeBlog.subtitle}</span>
                   </div>
                   <ChevronsUpDown className="ml-auto" />
                 </>

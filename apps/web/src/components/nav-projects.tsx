@@ -7,6 +7,9 @@ import {
   Trash2,
   Pencil,
   type LucideIcon,
+  Clock,
+  History,
+  DiffIcon,
 } from "lucide-react"
 import { useRouter, usePathname } from "next/navigation"
 
@@ -14,7 +17,11 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuPortal,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
@@ -39,6 +46,7 @@ export function NavRecipies({
     name: string
     url: string
     icon: ReactElement
+    latestVersion: number
   }[]
 }) {
   const { isMobile } = useSidebar()
@@ -55,9 +63,9 @@ export function NavRecipies({
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Recipes</SidebarGroupLabel>
-      <SidebarMenu>
+      <SidebarMenu >
         {recipes.map((item) => (
-          <SidebarMenuItem key={item.name}>
+          <SidebarMenuItem key={item.name} >
             <SidebarMenuButton asChild isActive={pathname.includes(item.url)}>
               <div className="cursor-pointer" onClick={() => router.push(item.url)}>
                 {item.icon}
@@ -89,6 +97,28 @@ export function NavRecipies({
                   <span>Share Recipe</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => router.push(`${item.url}/diff`)}>
+                  <DiffIcon className="text-muted-foreground" />
+                  <span>Compare Versions</span>
+                </DropdownMenuItem>
+                {item.latestVersion > 1 && (
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      <History className="text-muted-foreground" />
+                      <span>History</span>
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+
+                      <DropdownMenuSubContent>
+                        {Array.from({ length: item.latestVersion }, (_, i) => i + 1).reverse().map(version => (
+                          <DropdownMenuItem key={version} onClick={() => router.push(`${item.url}/${version}`)}>
+                            <span>Version {version}</span>
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                  </DropdownMenuSub>
+                )}
                 <DropdownMenuItem onClick={() => deleteRecipe({ id: item.id, blogId: item.blogId })}>
                   <Trash2 className="text-muted-foreground" />
                   <span>Delete Recipe</span>

@@ -49,7 +49,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const navItems = [
     {
       title: "Home",
-      url: "/",
+      url: activeBlogId ? `/admin/${activeBlogId}` : "/",
       icon: Home,
     },
     {
@@ -63,7 +63,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     blogId: recipe.blogId,
     name: recipe.metadata?.name || "Untitled Recipe", 
     url: `/admin/${activeBlogId}/${recipe.id}`,
-    icon: <VersionBadge version={recipe.version || 1} />
+    icon: <VersionBadge version={recipe.version || 1} />,
+    latestVersion: recipe.version || 1
   }))
 
   const handleBlogChange = (blogId: string) => {
@@ -78,7 +79,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           blogs={blogs.map((blog) => ({
             name: blog.id,
             logo: BookOpen,
-            plan: "Free",
+            subtitle: `${blog.recipes.length} recipes`
           }))}
           onBlogChange={handleBlogChange}
           activeBlogId={activeBlogId}

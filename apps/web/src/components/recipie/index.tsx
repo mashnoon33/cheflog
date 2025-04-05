@@ -2,20 +2,26 @@ import type { Recipe } from '@repo/parser';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Section } from './sections';
-
+import { Badge } from '../ui/badge';
+import { RouterOutputs } from '@/trpc/react';
 interface RecipeProps {
   recipe: Recipe;
+  version: number;
 }
 
-export const RecipeComponent: React.FC<RecipeProps> = ({ recipe }) => {
+export const RecipeComponent: React.FC<RecipeProps> = ({ recipe, version }) => {
   return (
     <div className="flex flex-1 flex-col gap-1 pt-10 md:pt-20 h-[100%] max-w-2xl lg:max-w-7xl mx-auto px-4 md:px-8 lg:px-[7rem]">
       <div className="flex flex-row">
         {/* {recipe.cuisine && <CuisineText cuisine={recipe.cuisine} />} */}
       </div>
-      
+      <div>
+        <Badge variant="outline">
+          <span className="text-gray-300 "> V</span> {version}
+        </Badge>
+      </div>
       <h1 className="text-4xl dark:text-white font-bold">{recipe.title}</h1>
-      
+
       {/* Description */}
       <div className="flex-col hidden md:flex">
         {recipe.description.length < 250 ? (

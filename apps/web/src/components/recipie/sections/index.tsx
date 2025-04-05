@@ -12,10 +12,10 @@ export const Section: React.FC<SectionProps> = ({ section }) => {
 
   return (
     <div>
-      <h4 className=" font-semibold text-gray-700">{section.title}</h4>
+      <h4 className=" font-semibold text-gray-500 mb-4 ">{section.title}</h4>
       <div className="flex flex-col md:flex-row mb-10 min-w-1/2 gap-4 md:gap-20">
       <div className="flex-1">
-        <div className="border border-gray-300 dark:border-neutral-300/10 bg-gray-100 dark:bg-primary rounded-lg py-2">
+        <div className="border border-gray-300 dark:border-neutral-300/10 bg-neutral-50 dark:bg-primary rounded-lg py-2">
           <Ingredients ingredients={section.ingredients} />
         </div>
       </div>
