@@ -1,11 +1,25 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
 
 export const blogRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.blog.findMany({
       where: {
         userId: ctx.session.user.id,
+      },
+      select: {
+        id: true,
+        name: true,
+        recipes: true,
+      },
+    });
+  }),
+
+  // Public version for static generation
+  getAllPublic: publicProcedure.query(async ({ ctx }) => {
+    return await ctx.db.blog.findMany({
+      where: {
+        public: true,
       },
       select: {
         id: true,

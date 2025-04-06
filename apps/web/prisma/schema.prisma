@@ -70,6 +70,7 @@ model Blog {
     user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId    String
     recipes   Recipe[]
+    public    Boolean   @default(true)
 }
 
 model Recipe {
@@ -85,7 +86,7 @@ model Recipe {
     blog        Blog               @relation(fields: [blogId], references: [id], onDelete: Cascade)
     blogId      String
     slug        String?
-    
+    public      Boolean            @default(true)
     @@unique([blogId, slug])
     @@index([blogId, slug])
     @@index([blogId, id])

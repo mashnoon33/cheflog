@@ -3,12 +3,24 @@ import { z } from "zod";
 import { parseFrontmatter } from "@/components/editor/monaco/faux-language-server/frontmatter";
 import {
   createTRPCRouter,
-  protectedProcedure
+  protectedProcedure,
+  publicProcedure
 } from "@/server/api/trpc";
 import { parseRecipe, Recipe } from "@repo/parser";
+import type { PrismaClient } from "@prisma/client";
+
+type Context = {
+  db: PrismaClient;
+  session: {
+    user: {
+      id: string;
+    };
+  };
+};
+
 // Utility function to handle ingredient creation and linking
 async function handleRecipeIngredients(
-  ctx: any,
+  ctx: Context,
   recipeId: string,
   parsedRecipe: Recipe,
   metadataId: string | undefined
@@ -52,9 +64,42 @@ async function handleRecipeIngredients(
 }
 
 // Utility function to delete all ingredients for a recipe
-async function deleteRecipeIngredients(ctx: any, recipeId: string) {
+async function deleteRecipeIngredients(ctx: Context, recipeId: string) {
   await ctx.db.recipeIngredient.deleteMany({
     where: { recipeId: recipeId },
+  });
+}
+
+// Common recipe include pattern
+const recipeInclude = {
+  ingredients: {
+    include: {
+      ingredient: true,
+    },
+  },
+  metadata: true,
+};
+
+// Common recipe query function
+async function getRecipes(ctx: Context, blogId: string, publicOnly: boolean = false) {
+  return await ctx.db.recipe.findMany({
+    where: { 
+      blogId,
+      ...(publicOnly ? { public: true } : {})
+    },
+    include: recipeInclude,
+  });
+}
+
+// Common recipe by id query function
+async function getRecipeById(ctx: Context, id: string, blogId: string, publicOnly: boolean = false) {
+  return await ctx.db.recipe.findUnique({
+    where: { 
+      id,
+      blogId,
+      ...(publicOnly ? { public: true } : {})
+    },
+    include: recipeInclude,
   });
 }
 
@@ -62,33 +107,25 @@ export const recipeRouter = createTRPCRouter({
   getAll: protectedProcedure
     .input(z.object({ blogId: z.string() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.db.recipe.findMany({
-        where: { blogId: input.blogId },
-        include: {
-          ingredients: {
-          include: {
-            ingredient: true,
-          },
-        },
-        metadata: true,
-      },
-    });
-  }),
+      return getRecipes(ctx, input.blogId);
+    }),
+
+  getAllPublic: publicProcedure
+    .input(z.object({ blogId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return getRecipes(ctx, input.blogId, true);
+    }),
+
+  getByIdPublic: publicProcedure
+    .input(z.object({ id: z.string(), blogId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return getRecipeById(ctx, input.id, input.blogId, true);
+    }),
 
   getById: protectedProcedure
     .input(z.object({ id: z.string(), blogId: z.string() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.db.recipe.findUnique({
-        where: { id: input.id, blogId: input.blogId },
-        include: {
-          ingredients: {
-            include: {
-              ingredient: true,
-            },
-          },
-          metadata: true,
-        },
-      });
+      return getRecipeById(ctx, input.id, input.blogId);
     }),
 
   getByIdWithVersion: protectedProcedure
@@ -98,7 +135,7 @@ export const recipeRouter = createTRPCRouter({
         where: { recipeId_version: { recipeId: input.id, version: input.version } },
       });
     }),
-  
+
   create: protectedProcedure
     .input(
       z.object({
@@ -109,7 +146,7 @@ export const recipeRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       // Parse the markdown to extract metadata
       const parsedRecipe = parseRecipe(input.markdown);
- 
+
       // Create the recipe
       const recipe = await ctx.db.recipe.create({
         data: {
@@ -121,7 +158,6 @@ export const recipeRouter = createTRPCRouter({
               summary: parsedRecipe.description || "",
             },
           },
-          // Store the first version in history
           history: {
             create: {
               markdown: input.markdown,
@@ -139,7 +175,6 @@ export const recipeRouter = createTRPCRouter({
         await handleRecipeIngredients(ctx, recipe.id, parsedRecipe, recipe.metadata?.id);
       } catch (error) {
         console.error("Error adding ingredients:", error);
-        // Still return recipe even if ingredients fail
       }
     
       return recipe;
@@ -181,8 +216,6 @@ export const recipeRouter = createTRPCRouter({
 
       // Parse the markdown to extract metadata
       const parsedRecipe = parseRecipe(input.markdown);
-      const parsedFrontmatter = parseFrontmatter(input.markdown);
-
       const latestVersion = recipe.history[0]?.version ?? 0;
 
       // Delete existing ingredients
@@ -203,7 +236,6 @@ export const recipeRouter = createTRPCRouter({
               summary: parsedRecipe.description || "",
             },
           },
-          // Store the update in history
           history: {
             create: {
               markdown: input.markdown,
@@ -217,7 +249,6 @@ export const recipeRouter = createTRPCRouter({
         },
       });
 
-      // Add new ingredients
       try {
         await handleRecipeIngredients(ctx, input.id, parsedRecipe, updatedRecipe.metadata?.id);
       } catch (error) {

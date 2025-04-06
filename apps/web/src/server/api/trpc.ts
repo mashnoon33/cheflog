@@ -36,6 +36,14 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
   };
 };
 
+export const createStaticTRPCContext = async (opts: { headers: Headers }) => {
+  return {
+    db,
+    session: null,
+    ...opts,
+  };
+};
+
 /**
  * 2. INITIALIZATION
  *
