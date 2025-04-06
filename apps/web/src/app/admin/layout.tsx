@@ -17,7 +17,7 @@ export default function AdminLayout({
     const pathname = usePathname();
     
     useEffect(() => {
-      if (pathname?.endsWith('/create') || pathname?.endsWith('/edit') || pathname?.endsWith('/diff')) {
+      if (pathname?.endsWith('/create') || pathname?.endsWith('/edit')) {
         setOpen(false);
       } else {
         setOpen(true);

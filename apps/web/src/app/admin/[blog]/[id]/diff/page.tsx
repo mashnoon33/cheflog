@@ -6,7 +6,7 @@ import { Loader2 } from "lucide-react"
 import { DiffEditor } from "@monaco-editor/react"
 
 import { api } from "@/trpc/react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { RangeSlider } from "@/components/ui/range"
 
 export default function DiffPage() {
   const params = useParams()
@@ -40,7 +40,7 @@ export default function DiffPage() {
     }
   }, [recipe]);
 
-  if (recipeLoading || leftLoading || rightLoading) {
+  if (recipeLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
         <Loader2 className="h-8 w-8 animate-spin" />
@@ -51,66 +51,46 @@ export default function DiffPage() {
     return <div>Recipe not found</div>
   }
 
-  const versionOptions = Array.from({ length: recipe.version }, (_, i) => (i + 1).toString())
-
   return (
-    <div className="h-screen flex flex-col gap-4 " >
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">Compare version</span>
-          <Select
-            value={leftVersion.toString()}
-            onValueChange={(value) => setLeftVersion(parseInt(value))}
-          >
-            <SelectTrigger className="w-24">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {versionOptions.map((version) => (
-                <SelectItem key={version} value={version}>
-                  {version}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">with version</span>
-          <Select
-            value={rightVersion.toString()}
-            onValueChange={(value) => setRightVersion(parseInt(value))}
-          >
-            <SelectTrigger className="w-24">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {versionOptions.map((version) => (
-                <SelectItem key={version} value={version}>
-                  {version}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+    <div className="h-screen flex flex-col">
+      <div className="relative flex-1">
+        {(leftLoading || rightLoading) && (
+          <div className="absolute inset-0 flex items-center justify-center bg-background/50">
+            <Loader2 className="h-8 w-8 animate-spin" />
+          </div>
+        )}
+        
+        {leftRecipe && rightRecipe ? (
+          <DiffEditor
+            original={leftRecipe.markdown}
+            modified={rightRecipe.markdown}
+            language="markdown"
+            options={{
+              readOnly: true,
+              enableSplitViewResizing: false,
+              renderSideBySide: false,
+            }}
+          />
+        ) : (
+          <div>Select versions to compare</div>
+        )}
       </div>
 
-      {leftRecipe && rightRecipe ? (
-        <DiffEditor
-          original={leftRecipe.markdown}
-          modified={rightRecipe.markdown}
-          language="markdown"
-          options={{
-            readOnly: true,
-            // You can optionally disable the resizing
-            enableSplitViewResizing: false,
-
-            // Render the diff inline
-            renderSideBySide: false,
+      <div className="fixed bottom-8 bg-neutral-900 right-8 w-80  backdrop-blur  p-4 rounded-lg shadow-lg z-50">
+        <div className="text-sm text-neutral-400 mb-5">Compare Versions</div>
+        <RangeSlider
+          min={1}
+          max={recipe.version}
+          prefix="v"
+          step={1}
+          value={[leftVersion || 1, rightVersion || recipe.version]}
+          onValueChange={([left, right]) => {
+            setLeftVersion(left)
+            setRightVersion(right)
           }}
+          formatValue={(value) => `v${value}`}
         />
-      ) : (
-        <div>Select versions to compare</div>
-      )}
+      </div>
     </div>
   )
 }
