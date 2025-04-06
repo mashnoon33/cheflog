@@ -1,15 +1,14 @@
-import { MarkerData, TextModel } from '../types';
-import { MonacoType } from '../../type';
-import { parseFrontmatter } from './frontmatter';
-import { RECIPE_SECTIONS } from '../constants';
+import { MarkerData, RecipeLanguageServerDependencies, TextModel } from './types';
+import { validateFrontmatter, parseFrontmatter } from './frontmatter';
 
-/**
- * Validates the recipe content structure
- */
-export function validateContent(monaco: MonacoType, model: TextModel): MarkerData[] {
+export function validateModel({ monaco }: RecipeLanguageServerDependencies, model: TextModel): MarkerData[] {
   const text = model.getValue();
   const lines = text.split('\n');
   const problems: MarkerData[] = [];
+  
+  // Validate frontmatter first
+  const frontmatterProblems = validateFrontmatter(monaco, model);
+  problems.push(...frontmatterProblems);
   
   // Get the frontmatter information to adjust line numbers for content validation
   const { hasFrontmatter, endLine } = parseFrontmatter(text);
@@ -36,8 +35,8 @@ export function validateContent(monaco: MonacoType, model: TextModel): MarkerDat
     }
     
     // Check section headers
-    if (line.trim().startsWith('==')) {
-      const sectionName = line.trim().substring(2).trim();
+    if (line.trim().startsWith('== ')) {
+      const sectionName = line.trim().substring(3).trim();
       if (sectionName.length === 0) {
         problems.push({
           severity: monaco.MarkerSeverity.Error,
@@ -48,24 +47,17 @@ export function validateContent(monaco: MonacoType, model: TextModel): MarkerDat
           endColumn: line.length + 1
         });
       }
-      
       currentSection = sectionName;
-      
-      // Track required sections
-      if (sectionName.toLowerCase() === 'ingredients') {
-        hasIngredients = true;
-      } else if (sectionName.toLowerCase() === 'instructions') {
-        hasInstructions = true;
-      }
     }
-    
-    // Check section content based on section type
-    if (currentSection.toLowerCase() === 'ingredients') {
-      // Ingredients should start with '-'
-      if (line.trim() !== '' && !line.trim().startsWith('#') && !line.trim().startsWith('==') && !line.trim().startsWith('-')) {
+
+    // Validate ingredient format and track if we've found ingredients
+    if (line.trim().startsWith('-')) {
+      hasIngredients = true;
+      const ingredientRegex = /^-\s*\[(.*?)\]/;
+      if (!ingredientRegex.test(line)) {
         problems.push({
-          severity: monaco.MarkerSeverity.Warning,
-          message: 'Ingredient lines should start with "-"',
+          severity: monaco.MarkerSeverity.Error,
+          message: 'Invalid ingredient format. Use: - [amount unit] ingredient *(optional notes)*',
           startLineNumber: i + 1,
           startColumn: 1,
           endLineNumber: i + 1,
@@ -73,17 +65,15 @@ export function validateContent(monaco: MonacoType, model: TextModel): MarkerDat
         });
       }
     }
-    
-    if (currentSection.toLowerCase() === 'instructions') {
-      // Instructions should usually start with a number
-      const trimmed = line.trim();
-      if (trimmed !== '' && 
-          !trimmed.startsWith('#') && 
-          !trimmed.startsWith('==') && 
-          !/^\d+\./.test(trimmed)) {
+
+    // Validate instruction format and track if we've found instructions
+    if (/^\d+\./.test(line.trim())) {
+      hasInstructions = true;
+      const instructionRegex = /^\d+\.\s+.+/;
+      if (!instructionRegex.test(line)) {
         problems.push({
-          severity: monaco.MarkerSeverity.Info,
-          message: 'Instruction lines typically start with a step number (e.g., "1.")',
+          severity: monaco.MarkerSeverity.Error,
+          message: 'Invalid instruction format. Use: 1. instruction text',
           startLineNumber: i + 1,
           startColumn: 1,
           endLineNumber: i + 1,
@@ -92,40 +82,40 @@ export function validateContent(monaco: MonacoType, model: TextModel): MarkerDat
       }
     }
   });
-  
-  // Check for missing required sections
+
+  // Add problems for missing required sections
   if (!hasTitle) {
     problems.push({
       severity: monaco.MarkerSeverity.Error,
-      message: 'Recipe must have a title (starts with "# ")',
+      message: 'Recipe must have a title (# Title)',
       startLineNumber: contentStartLine + 1,
       startColumn: 1,
       endLineNumber: contentStartLine + 1,
       endColumn: 1
     });
   }
-  
+
   if (!hasIngredients) {
     problems.push({
-      severity: monaco.MarkerSeverity.Error,
-      message: 'Recipe must have an Ingredients section',
+      severity: monaco.MarkerSeverity.Warning,
+      message: 'Recipe should have at least one ingredient',
       startLineNumber: contentStartLine + 1,
       startColumn: 1,
       endLineNumber: contentStartLine + 1,
       endColumn: 1
     });
   }
-  
+
   if (!hasInstructions) {
     problems.push({
-      severity: monaco.MarkerSeverity.Error,
-      message: 'Recipe must have an Instructions section',
+      severity: monaco.MarkerSeverity.Warning,
+      message: 'Recipe should have at least one instruction',
       startLineNumber: contentStartLine + 1,
       startColumn: 1,
       endLineNumber: contentStartLine + 1,
       endColumn: 1
     });
   }
-  
+
   return problems;
 } 

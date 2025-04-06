@@ -5,6 +5,9 @@ import React, { useEffect, useRef } from 'react';
 import { defaultRecipe } from './const';
 import { register, validate } from './faux-language-server';
 
+
+
+
 export interface RecipeEditorProps {
   initialValue?: string;
   onChange?: (value: string | undefined) => void;
@@ -12,7 +15,7 @@ export interface RecipeEditorProps {
 
 export const RecipeEditor: React.FC<RecipeEditorProps> = ({ 
   initialValue,
-  onChange,
+  onChange 
 }) => {
   const monaco = useMonaco();
   const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
@@ -27,14 +30,14 @@ export const RecipeEditor: React.FC<RecipeEditorProps> = ({
     editorRef.current = editor;
   };
 
-  const handleEditorValidation = async (markers: Monaco.editor.IMarker[]) => {
+  const handleEditorValidation = (markers: Monaco.editor.IMarker[]) => {
     if (!monaco || !editorRef.current) return;
     
     const model = editorRef.current.getModel();
     if (!model) return;
 
     // Update markers with our custom validation
-    const problems = await validate(monaco, model);
+    const problems = validate(monaco, model);
     monaco.editor.setModelMarkers(model, 'recipe', problems);
   };
 

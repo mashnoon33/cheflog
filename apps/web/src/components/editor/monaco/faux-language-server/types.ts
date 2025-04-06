@@ -1,5 +1,5 @@
 import type * as Monaco from 'monaco-editor';
-import { MonacoType } from '../../type';
+import { MonacoType } from '../type';
 
 export interface RecipeLanguageServerDependencies {
   monaco: MonacoType;
