@@ -1,10 +1,4 @@
 import { HydrateClient } from "@/trpc/server";
-import { CallToAction } from "./_components/CallToAction";
-import { Features } from "./_components/Features";
-import { Hero } from "./_components/Hero";
-import { AuthButton } from "./_components/AuthButton";
-import { CreateBlogDialog } from "@/components/modals/create-blog-dialog";
-import { BlogList } from "./_components/BlogList";
 
 export default async function Home() {
   return (
