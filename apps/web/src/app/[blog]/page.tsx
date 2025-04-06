@@ -51,7 +51,7 @@ const LoadingRecipeCards = () => (
   </div>
 );
 
-const RecipeCard = ({ recipe, currentRoute }: { recipe: RecipeRes; currentRoute: string }) => (
+export const RecipeCard = ({ recipe, currentRoute }: { recipe: RecipeRes; currentRoute: string }) => (
   <Link href={`${currentRoute}/${recipe.id}`}>
     <BaseCard>
       <div className="pb-2">

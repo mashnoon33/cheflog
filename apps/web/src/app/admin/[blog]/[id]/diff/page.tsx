@@ -31,7 +31,7 @@ export default function DiffPage() {
   }, {
     enabled: rightVersion !== 0
   })
-  
+
   // Auto-select the two latest versions when recipe data is loaded
   useEffect(() => {
     if (recipe && recipe.version > 1) {
@@ -51,7 +51,7 @@ export default function DiffPage() {
     return <div>Recipe not found</div>
   }
 
-  const versionOptions = Array.from({length: recipe.version}, (_, i) => (i + 1).toString())
+  const versionOptions = Array.from({ length: recipe.version }, (_, i) => (i + 1).toString())
 
   return (
     <div className="h-screen flex flex-col gap-4 " >
@@ -68,7 +68,7 @@ export default function DiffPage() {
             <SelectContent>
               {versionOptions.map((version) => (
                 <SelectItem key={version} value={version}>
-                   {version}
+                  {version}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -86,7 +86,7 @@ export default function DiffPage() {
             <SelectContent>
               {versionOptions.map((version) => (
                 <SelectItem key={version} value={version}>
-                   {version}
+                  {version}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -101,7 +101,11 @@ export default function DiffPage() {
           language="markdown"
           options={{
             readOnly: true,
-            renderSideBySide: true,
+            // You can optionally disable the resizing
+            enableSplitViewResizing: false,
+
+            // Render the diff inline
+            renderSideBySide: false,
           }}
         />
       ) : (

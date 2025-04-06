@@ -1,0 +1,39 @@
+import { db } from "@/server/db";
+import { NextResponse } from "next/server";
+
+export async function GET(
+  request: Request,
+  { params }: { params: { blog: string } }
+) {
+  try {
+    // Get total recipes count
+    const totalRecipes = await db.recipe.count({
+      where: { blogId: params.blog },
+    });
+
+    // Get recent recipes with their metadata
+    const recentRecipes = await db.recipe.findMany({
+      where: { blogId: params.blog },
+      include: { metadata: true },
+      orderBy: { updatedAt: "desc" },
+      take: 6, // Show last 6 recipes
+    });
+
+    // Get last updated timestamp
+    const lastUpdated = recentRecipes[0]?.updatedAt
+      ? new Date(recentRecipes[0].updatedAt).toLocaleDateString()
+      : "Never";
+
+    return NextResponse.json({
+      totalRecipes,
+      recentRecipes,
+      lastUpdated,
+    });
+  } catch (error) {
+    console.error("Error fetching dashboard data:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch dashboard data" },
+      { status: 500 }
+    );
+  }
+} 

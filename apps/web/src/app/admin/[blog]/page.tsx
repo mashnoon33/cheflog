@@ -1,8 +1,119 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { api } from "@/trpc/react";
+import { DataTable } from "@/components/ui/data-table";
+import { columns } from "./columns";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LayoutGrid, Table } from "lucide-react";
 
 export default function AdminBlogPage() {
   const params = useParams();
-  return <div>Blog: {params.blog}</div>;
+  const [view, setView] = useState<"cards" | "table">("cards");
+  const { data, isLoading } = api.admin.getDashboardData.useQuery({
+    blogId: params.blog as string,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className=" px-4 py-8">
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold mb-2">Blog Dashboard</h1>
+        <p className="text-muted-foreground">Manage your recipes and track your blog's performance</p>
+      </div>
+      
+      {/* Metrics Section */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+        <Card className="bg-background/50 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-medium">Total Recipes</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{data?.totalRecipes || 0}</p>
+            <p className="text-sm text-muted-foreground mt-1">All recipes in your blog</p>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-background/50 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-medium">Last Updated</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{data?.lastUpdated || "Never"}</p>
+            <p className="text-sm text-muted-foreground mt-1">Most recent activity</p>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-background/50 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-medium">Recent Activity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{data?.recentRecipes?.length || 0}</p>
+            <p className="text-sm text-muted-foreground mt-1">New recipes added</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recipes Section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-semibold">Recent Recipes</h2>
+          <div className="flex items-center gap-4">
+            <Tabs value={view} onValueChange={(v) => setView(v as "cards" | "table")}>
+              <TabsList>
+                <TabsTrigger value="cards" className="flex items-center gap-2">
+                  <LayoutGrid className="h-4 w-4" />
+                  Cards
+                </TabsTrigger>
+                <TabsTrigger value="table" className="flex items-center gap-2">
+                  <Table className="h-4 w-4" />
+                  Table
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+            <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              View all →
+            </button>
+          </div>
+        </div>
+
+        {view === "cards" ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {data?.recentRecipes?.map((recipe) => (
+              <Card 
+                key={recipe.id} 
+                className="group hover:bg-accent/50 transition-colors cursor-pointer"
+              >
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg font-medium group-hover:text-accent-foreground">
+                    {recipe.metadata?.name || "Untitled Recipe"}
+                  </CardTitle>
+                  <CardDescription className="text-xs">
+                    Version {recipe.version} • {new Date(recipe.updatedAt).toLocaleDateString()}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground line-clamp-2">
+                    {recipe.metadata?.summary || "No summary available"}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <DataTable columns={columns} data={data?.recentRecipes || []} />
+        )}
+      </div>
+    </div>
+  );
 }
