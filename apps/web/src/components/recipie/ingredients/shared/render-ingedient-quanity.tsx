@@ -54,12 +54,12 @@ export const RenderIngredientQuantity: React.FC<RenderIngredientQuantityProps> =
     const parts = fraction.split(' ');
     if (parts.length === 1) {
       // Simple fraction
-      const [num, den] = parts[0].split('/');
+      const [num, den] = parts[0]?.split('/') ?? [];
       return <>{num}<sup>{num}</sup>&frasl;<sub>{den}</sub></>;
     } else {
       // Mixed number
       const [whole, frac] = parts;
-      const [num, den] = frac.split('/');
+      const [num, den] = frac?.split('/') ?? [];
       return <>{whole} <sup>{num}</sup>&frasl;<sub>{den}</sub></>;
     }
   };

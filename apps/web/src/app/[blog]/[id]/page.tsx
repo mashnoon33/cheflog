@@ -4,12 +4,13 @@ import { RecipeDetail } from "@/components/recipe-detail";
 export default async function RecipeDetailPage({
   params,
 }: {
-  params: { id: string; blog: string };
+  params: Promise<{ id: string; blog: string }>;
 }) {
+  const resolvedParams = await params;
   const recipe = await api.recipe.getById({ 
-    id: params.id, 
-    blogId: params.blog 
+    id: resolvedParams.id, 
+    blogId: resolvedParams.blog 
   });
 
-  return <RecipeDetail recipe={recipe} blog={params.blog} />;
+  return <RecipeDetail recipe={recipe} blog={resolvedParams.blog} />;
 }

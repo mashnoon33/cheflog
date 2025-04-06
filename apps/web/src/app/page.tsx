@@ -26,10 +26,3 @@ export default async function Home() {
   );
 }
 
-export function Auth() {
-  return (
-    <div className="flex items-center justify-center p-4">
-      <AuthButton />
-    </div>
-  );
-}
