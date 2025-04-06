@@ -17,15 +17,21 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "../ui/input";
 
-export function CreateBlogDialog() {
-  const [open, setOpen] = useState(false);
+interface CreateBlogDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export function CreateBlogDialog({  open, onOpenChange }: CreateBlogDialogProps) {
   const [slug, setSlug] = useState("");
   const router = useRouter();
+  const utils = api.useUtils();
   const { mutate: createBlog, isPending } = api.blog.create.useMutation({
     onSuccess: () => {
       toast.success("Blog created successfully!");
-      setOpen(false);
-      router.push(`/${slug}`);
+      onOpenChange(false);
+      router.push(`/admin/${slug}`);
+      utils.blog.invalidate();
     },
     onError: (error) => {
       toast.error(error.message);
@@ -38,10 +44,8 @@ export function CreateBlogDialog() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>Create Blog</Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+     
       <DialogContent>
         <form onSubmit={handleSubmit}>
           <DialogHeader>

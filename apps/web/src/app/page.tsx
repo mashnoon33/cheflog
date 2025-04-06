@@ -10,16 +10,8 @@ export default async function Home() {
   return (
     <HydrateClient>
       <main className="flex min-h-screen flex-col">
-        <Hero />
-        <Features />
-        <div className="container mx-auto py-8">
-          <h2 className="text-2xl font-bold mb-6">Your Blogs</h2>
-          <BlogList />
-        </div>
-        <CallToAction />
-        <div className="flex items-center justify-center gap-4 p-4">
-          <AuthButton />
-          <CreateBlogDialog />
+        <div className="container m-auto py-8 text-4xl font-bold">
+            ChiliOil
         </div>
       </main>
     </HydrateClient>

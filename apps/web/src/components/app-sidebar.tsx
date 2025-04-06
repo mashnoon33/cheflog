@@ -16,7 +16,7 @@ import { api } from "@/trpc/react"
 import { Home, Plus, BookOpen } from "lucide-react"
 import { useEffect } from "react"
 import { BlogSwitcher } from "@/components/blog-switcher"
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { Badge } from "./ui/badge"
 
 function VersionBadge({ version }: { version: number }) {
@@ -35,6 +35,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: recipes = [] } = api.recipe.getAll.useQuery({ blogId: activeBlogId }, {
     enabled: !!activeBlogId
   })
+  const params = useParams()
 
   // Update active blog when blogs are loaded
   useEffect(() => {
@@ -72,6 +73,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     router.push(`/${blogId}`)
   }
 
+  useEffect(() => {
+    const currentBlogId = params.blog as string
+    setActiveBlogId(currentBlogId)
+  }, [params.blog])
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -82,7 +88,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             subtitle: `${blog.recipes.length} recipes`
           }))}
           onBlogChange={handleBlogChange}
-          activeBlogId={activeBlogId}
         />
       </SidebarHeader>
       <SidebarContent>

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { ChevronsUpDown, Plus } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 
 import {
   DropdownMenu,
@@ -19,11 +19,11 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { CreateBlogDialog } from "@/components/modals/create-blog-dialog"
 
 export function BlogSwitcher({
   blogs,
   onBlogChange,
-  activeBlogId,
 }: {
   blogs: {
     name: string
@@ -31,14 +31,18 @@ export function BlogSwitcher({
     subtitle: string
   }[]
   onBlogChange: (blogId: string) => void
-  activeBlogId: string
 }) {
   const { isMobile } = useSidebar()
   const router = useRouter()
-  const activeBlog = blogs.find(blog => blog.name === activeBlogId) || blogs[0]
+  const params = useParams()
+  const currentBlogId = params.blog as string
+  const activeBlog = blogs.find(blog => blog.name === currentBlogId) || blogs[0]
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false)
 
-
-
+  const handleCreateBlog = () => {
+    setIsCreateDialogOpen(true)
+  }
+  
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -90,15 +94,17 @@ export function BlogSwitcher({
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 p-2">
+            <DropdownMenuItem className="gap-2 p-2"  onClick={handleCreateBlog}>
               <div className="flex size-6 items-center justify-center rounded-md border bg-background">
                 <Plus className="size-4" />
               </div>
               <div className="font-medium text-muted-foreground">Create Blog</div>
             </DropdownMenuItem>
+
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
+      <CreateBlogDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} />
     </SidebarMenu>
   )
 }
