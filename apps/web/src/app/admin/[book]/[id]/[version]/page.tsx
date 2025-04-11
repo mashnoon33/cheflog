@@ -2,14 +2,15 @@
 
 import { useParams } from "next/navigation";
 import { api } from "@/trpc/react";
-import { RecipeDetail } from "@/components/recipe-detail";
 import { Loader2 } from "lucide-react";
+import { RecipeDetail } from "@/components/recipie/detail";
 
 export default function AdminRecipeDetailPage() {
   const params = useParams();
   const version = parseInt(params.version as string);
   const { data: recipe, isLoading } = api.recipe.getByIdWithVersion.useQuery({
     id: params.id as string,
+    bookId: params.book as string,
     version: version
   });
 

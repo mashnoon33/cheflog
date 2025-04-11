@@ -1,20 +1,28 @@
 "use client";
 
-import { useParams } from "next/navigation";
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { RecipeCard } from "@/components/recipie/card";
+import { Button } from "@/components/ui/button";
 import { api } from "@/trpc/react";
-import { DataTable } from "@/components/ui/data-table";
-import { columns } from "./columns";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LayoutGrid, Table } from "lucide-react";
-import { RecipeCard } from "@/components/recipe-card";
+import { FileText, FolderOpen } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect } from "react";
+
 export default function AdminBookPage() {
   const params = useParams();
-  const [view, setView] = useState<"cards" | "table">("cards");
-  const { data, isLoading } = api.admin.getDashboardData.useQuery({
+  const { data, isLoading, error } = api.admin.getDashboardData.useQuery({
     bookId: params.book as string,
   });
+  const router = useRouter();
+
+  useEffect(() => {
+    if (error?.data?.code === "UNAUTHORIZED") {
+      router.push(`/admin`);
+    }
+  }, [error, router]);
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
 
   if (isLoading) {
     return (
@@ -25,75 +33,43 @@ export default function AdminBookPage() {
   }
 
   return (
-    <div className=" px-4 py-8">
-   
-      
-      {/* Metrics Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-        <Card className="bg-background/50 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium">Total Recipes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{data?.totalRecipes || 0}</p>
-            <p className="text-sm text-muted-foreground mt-1">All recipes in your book</p>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-background/50 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium">Last Updated</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{data?.lastUpdated || "Never"}</p>
-            <p className="text-sm text-muted-foreground mt-1">Most recent activity</p>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-background/50 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium">Recent Activity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{data?.recentRecipes?.length || 0}</p>
-            <p className="text-sm text-muted-foreground mt-1">New recipes added</p>
-          </CardContent>
-        </Card>
-      </div>
+    <section className="container px-4 py-16 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-800">
+      <div className=" ">
 
-      {/* Recipes Section */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold">Recent Recipes</h2>
-          <div className="flex items-center gap-4">
-            <Tabs value={view} onValueChange={(v) => setView(v as "cards" | "table")}>
-              <TabsList>
-                <TabsTrigger value="cards" className="flex items-center gap-2">
-                  <LayoutGrid className="h-4 w-4" />
-                  Cards
-                </TabsTrigger>
-                <TabsTrigger value="table" className="flex items-center gap-2">
-                  <Table className="h-4 w-4" />
-                  Table
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-            <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              View all →
-            </button>
-          </div>
-        </div>
-
-        {view === "cards" ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {data?.recentRecipes?.map((recipe) => (
               <RecipeCard key={recipe.id} recipe={recipe} currentRoute={`/admin/${params.book}`} />
             ))}
+
+            <div className="flex h-full flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 p-8 text-center dark:border-slate-700 dark:bg-slate-800/50">
+              <div className="rounded-full bg-neutral-100 p-3 dark:bg-slate-800">
+                <FileText className="h-6 w-6 text-slate-500" />
+              </div>
+              <h3 className="mt-4 font-mono text-sm font-medium">Create New Recipe</h3>
+              <p className="mt-2 text-xs text-slate-600 dark:text-slate-400">
+                Document your favorite dishes with ingredients, instructions, and notes
+              </p>
+              <Button variant="outline" size="sm" className="mt-4 font-mono">
+                Add Recipe
+              </Button>
+            </div>
+
+            <div className="flex h-full flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 p-8 text-center dark:border-slate-700 dark:bg-slate-800/50">
+              <div className="rounded-full bg-neutral-100 p-3 dark:bg-slate-800">
+                <FolderOpen className="h-6 w-6 text-slate-500" />
+              </div>
+              <h3 className="mt-4 font-mono text-sm font-medium">Create New Collection</h3>
+              <p className="mt-2 text-xs text-slate-600 dark:text-slate-400">
+                Organize recipes into collections like "Desserts" or "Quick Meals"
+              </p>
+              <Button variant="outline" size="sm" className="mt-4 font-mono">
+                Add Collection
+              </Button>
+            </div>
           </div>
-        ) : (
-          <DataTable columns={columns} data={data?.recentRecipes || []} />
-        )}
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

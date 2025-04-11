@@ -11,7 +11,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
+import ScrollIntoViewIfNeeded from "react-scroll-into-view-if-needed";
 export default function RecipeVersionLayout({
     children,
 }: {
@@ -20,7 +20,7 @@ export default function RecipeVersionLayout({
     const params = useParams();
     const router = useRouter();
     const version = parseInt(params.version as string);
-    const { data: recipe } = api.recipe.listVersions.useQuery({
+    const { data: recipe } = api.recipe.versions.listVersions.useQuery({
         id: params.id as string,
         bookId: params.book as string,
     });
@@ -31,9 +31,13 @@ export default function RecipeVersionLayout({
                 {children}
             </div>
             {recipe && recipe.length > 0 && (
-                <FloatingActionButton className="min-h-10">
-                    <div>
-                        {recipe.map(r => (
+                <FloatingActionButton >
+                    {recipe.map(r => (
+                        // @ts-expect-error - this is a workaround to get the data type to work
+                        <ScrollIntoViewIfNeeded key={r.version} active={version === r.version} options={{
+                            block: 'center',
+                            behavior: 'smooth',
+                        }}>
                             <div
                                 key={r.version}
                                 className={`group p-3 cursor-pointer border border-neutral-900 hover:bg-neutral-800 bg-transparent rounded-md transition-colors mb-2 ${version === r.version ? " bg-gradient-to-r from-green-900/70 to-red-900/70" : ""}`}
@@ -70,8 +74,9 @@ export default function RecipeVersionLayout({
                                     </DropdownMenu>
                                 </div>
                             </div>
-                        ))}
-                    </div>
+                        </ScrollIntoViewIfNeeded>
+
+                    ))}
                 </FloatingActionButton>
             )}
         </div>

@@ -6,20 +6,25 @@ import { api } from "@/trpc/react";
 
 export default function Page() {
 
-
   const { data: books, isLoading } = api.book.getAll.useQuery();
 
   const router = useRouter();
 
   useEffect(() => {
-    if (books && books.length > 0) {
-      router.push(`/admin/${books[0]?.id}`);
-    }
+    if (books ) {
+      if (books.length > 0) {
+        router.push(`/admin/${books[0]?.id}`);
+      } else {
+        router.push(`/admin/onboarding`);
+      }
+    } 
   }, [books, router]);
 
   if (isLoading) {
     return null;
   }
+ 
+
   return (
 
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">

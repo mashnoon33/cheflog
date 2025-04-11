@@ -1,8 +1,8 @@
-import { recipeRouter } from "@/server/api/routers/recipe";
-import { bookRouter } from "@/server/api/routers/book";
-import { adminRouter } from "@/server/api/routers/admin";
-import { scraperRouter } from "@/server/api/routers/scraper";
-import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
+import { adminRouter } from "./routers/admin";
+import { bookRouter } from "./routers/books";
+import { recipeRouter } from "./routers/recipes";
+import { scraperRouter } from "./routers/scraper";
+import { createTRPCRouter, createCallerFactory } from "./trpc";
 
 /**
  * This is the primary router for your server.

@@ -1,11 +1,11 @@
 import { api, staticApi } from "@/trpc/server";
-import { RecipeDetail } from "@/components/recipe-detail";
-
+import { Fab } from "./_components/fab";
+import { RecipeDetail } from "@/components/recipie/detail";
 // Generate static params for all recipes
 export async function generateStaticParams() {
   const books = await staticApi.book.getAllPublic();
   const params = [];
-  
+
   for (const book of books) {
     const recipes = await staticApi.recipe.getAllPublic({ bookId: book.id });
     params.push(...recipes.map((recipe: any) => ({
@@ -13,7 +13,7 @@ export async function generateStaticParams() {
       id: recipe.id
     })));
   }
-  
+
   return params;
 }
 
@@ -23,10 +23,16 @@ export default async function RecipeDetailPage({
   params: Promise<{ id: string; book: string }>;
 }) {
   const resolvedParams = await params;
-  const recipe = await api.recipe.getByIdPublic({ 
-    id: resolvedParams.id, 
-    bookId: resolvedParams.book 
+  const recipe = await api.recipe.getByIdPublic({
+    id: resolvedParams.id,
+    bookId: resolvedParams.book
   });
+  if (!recipe) {
+    return <div>Recipe not found</div>;
+  }
 
-  return <RecipeDetail recipe={recipe} book={resolvedParams.book} />;
+  return <>
+    <RecipeDetail recipe={recipe} book={resolvedParams.book} />
+    <Fab recipe={recipe} />
+   </>;
 }

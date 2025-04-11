@@ -22,6 +22,7 @@ export default function DiffPage() {
 
   const { data: leftRecipe, isLoading: leftLoading } = api.recipe.getByIdWithVersion.useQuery({
     id: params.id as string,
+    bookId: params.book as string,
     version: leftVersion
   }, {
     enabled: leftVersion !== 0
@@ -29,6 +30,7 @@ export default function DiffPage() {
 
   const { data: rightRecipe, isLoading: rightLoading } = api.recipe.getByIdWithVersion.useQuery({
     id: params.id as string,
+    bookId: params.book as string,
     version: rightVersion
   }, {
     enabled: rightVersion !== 0

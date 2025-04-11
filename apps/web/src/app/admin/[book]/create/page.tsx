@@ -1,5 +1,5 @@
 "use client"
-import { CreateRecipeForm } from '@/components/CreateRecipeForm';
+import { CreateRecipeForm } from '@/components/editor';
 import { useParams } from 'next/navigation';
 
 export default function CreatePage() {
