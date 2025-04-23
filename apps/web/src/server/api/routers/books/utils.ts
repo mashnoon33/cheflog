@@ -1,8 +1,13 @@
 import { TrpcContext } from "@/trpc/context";
-
+import { Prisma } from "@prisma/client";
 export const bookSelect = {
   id: true,
   name: true,
+  user: {
+    select: {
+      handle: true,
+    },
+  },
   recipes: {
     select: {
       id: true,
@@ -15,7 +20,7 @@ export const bookSelect = {
       createdAt: true,
     },
   },
-};
+} satisfies Prisma.BookSelect;
 
 export async function getBooks(ctx: TrpcContext, publicOnly: boolean = false) {
   return await ctx.db.book.findMany({

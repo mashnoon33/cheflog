@@ -21,6 +21,9 @@ export function registerLanguageConfiguration({ monaco }: RecipeLanguageServerDe
         [/\*\(.*?\)\*/, 'recipe-description'],
         // Instructions
         [/^\d+\.\s/, 'recipe-step-number'],
+        // Time and Temperature (only in steps)
+        [/\[[^\]]+\]/, 'recipe-time'],
+        [/\{[^}]+\}/, 'recipe-temperature'],
       ]
     }
   });
@@ -41,6 +44,8 @@ export function registerLanguageConfiguration({ monaco }: RecipeLanguageServerDe
       { token: 'recipe-description', foreground: '608B4E', fontStyle: 'italic' },
       { token: 'recipe-step-number', foreground: 'CE9178' },
       { token: 'recipe-important', foreground: 'FF0000', fontStyle: 'bold' },
+      { token: 'recipe-time', foreground: '0066CC', fontStyle: 'bold' },
+      { token: 'recipe-temperature', foreground: 'CE9178', fontStyle: 'bold' },
     ],
     colors: {
       'editor.background': '#f7f7f7',

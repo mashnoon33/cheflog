@@ -543,6 +543,9 @@ const sidebarMenuButtonVariants = cva(
   }
 )
 
+/**
+ * SidebarMenuButton - standard menu button
+ */
 const SidebarMenuButton = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<"button"> & {
@@ -603,6 +606,111 @@ const SidebarMenuButton = React.forwardRef<
   }
 )
 SidebarMenuButton.displayName = "SidebarMenuButton"
+
+/**
+ * SidebarMenuButtonHoverable - menu button that opens submenu on hover
+ */
+const SidebarMenuButtonHoverable = React.forwardRef<
+  HTMLButtonElement,
+  React.ComponentProps<"button"> & {
+    asChild?: boolean
+    isActive?: boolean
+    disabled?: boolean
+    tooltip?: string | React.ComponentProps<typeof TooltipContent>
+    onOpenChange?: (open: boolean) => void
+    submenu?: React.ReactNode
+  } & VariantProps<typeof sidebarMenuButtonVariants>
+>(
+  (
+    {
+      asChild = false,
+      isActive = false,
+      variant = "default",
+      size = "default",
+      tooltip,
+      className,
+      disabled = false,
+      onOpenChange,
+      submenu,
+      ...props
+    },
+    ref
+  ) => {
+    const Comp = asChild ? Slot : "button"
+    const { isMobile, state } = useSidebar()
+    const [open, setOpen] = React.useState(false)
+
+    // Open submenu on hover (desktop only)
+    const handleMouseEnter = () => {
+      if (!isMobile) {
+        setOpen(true)
+        onOpenChange?.(true)
+      }
+    }
+    const handleMouseLeave = () => {
+      if (!isMobile) {
+        setOpen(false)
+        onOpenChange?.(false)
+      }
+    }
+
+    const button = (
+      <Comp
+        ref={ref}
+        data-sidebar="menu-button"
+        data-size={size}
+        data-active={isActive}
+        className={cn(sidebarMenuButtonVariants({ variant, size }), className, disabled && "pointer-events-none opacity-50")}
+        disabled={disabled}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        {...props}
+      />
+    )
+
+    // If tooltip is provided, wrap with Tooltip
+    const wrappedButton = !tooltip
+      ? button
+      : (
+        <Tooltip>
+          <TooltipTrigger asChild>{button}</TooltipTrigger>
+          <TooltipContent
+            side="right"
+            align="center"
+            hidden={state !== "collapsed" || isMobile}
+            {...(typeof tooltip === "string" ? { children: tooltip } : tooltip)}
+          />
+        </Tooltip>
+      )
+
+    // Render submenu if provided and open
+    return (
+      <div
+        style={{ position: "relative", display: "flex", width: "100%" }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {wrappedButton}
+        {submenu && open && (
+          <div
+            style={{
+              position: "absolute",
+              left: "100%",
+              top: 0,
+              zIndex: 50,
+              minWidth: 180,
+            }}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            {submenu}
+          </div>
+        )}
+      </div>
+    )
+  }
+)
+SidebarMenuButtonHoverable.displayName = "SidebarMenuButtonHoverable"
 
 const SidebarMenuAction = React.forwardRef<
   HTMLButtonElement,
@@ -762,6 +870,7 @@ export {
   SidebarMenuAction,
   SidebarMenuBadge,
   SidebarMenuButton,
+  SidebarMenuButtonHoverable,
   SidebarMenuItem,
   SidebarMenuSkeleton,
   SidebarMenuSub,

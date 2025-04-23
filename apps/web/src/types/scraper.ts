@@ -65,11 +65,11 @@ export interface Comment {
 }
 
 
-export function toRecipeMarkdown(scrapedRecipe: ScrapedRecipie): string {
+export function toRecipeMarkdown(scrapedRecipe: Partial<ScrapedRecipie>): string {
     return `---
 short-description: ${scrapedRecipe.description}
 yields: ${scrapedRecipe.yields}
-cuisine: ${scrapedRecipe.cuisine.toLowerCase()}
+cuisine: ${scrapedRecipe.cuisine?.toLowerCase()}
 source: ${scrapedRecipe.canonical_url}
 ---
 
@@ -77,7 +77,7 @@ source: ${scrapedRecipe.canonical_url}
 
 ${scrapedRecipe.description}
 ${
-    scrapedRecipe.parsed_ingredients.map((ingredient) => {
+    scrapedRecipe.parsed_ingredients?.map((ingredient) => {
         if (ingredient.amount && ingredient.amount.length > 0) {
             const amount = ingredient.amount[ingredient.amount.length - 1]!;
             const name = ingredient.name ? ingredient.name.map(n => n.text).join(' ') : ingredient.original;
@@ -89,7 +89,7 @@ ${
 }
 
 ${
-        scrapedRecipe.instructions_list.map((instruction, index) =>
+        scrapedRecipe.instructions_list?.map((instruction, index) =>
             `${index + 1}. ${instruction}`
         ).join("\n")
     }`;

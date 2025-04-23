@@ -1,6 +1,6 @@
 import { parseFrontmatter } from "@/components/editor/monaco/faux-language-server/frontmatter";
 import { parseRecipe, Recipe } from "@repo/parser";
-import type { PrismaClient } from "@prisma/client";
+import type { Prisma, PrismaClient } from "@prisma/client";
 import { TrpcContext } from "@/trpc/context";
 
 
@@ -17,14 +17,31 @@ export const recipeSelect = {
     select: {
       id: true,
       name: true,
+      handle: true,
     },
   },
-  stars: {
+  forksFrom: {
     select: {
-      id: true,
-      userId: true,
+      forkedFrom: {
+        select: {
+          createdBy: true,
+          bookId: true,
+          id: true,
+        },
+      },
+   
     },
-    take: 10,
+  },
+  forksTo: {
+    select: {
+      forkedTo: {
+        select: {
+          createdBy: true,
+          bookId: true,
+        },
+
+      },
+    },
   },
   createdAt: true,
   bookId: true,
@@ -44,8 +61,13 @@ export const recipeSelect = {
       description: true,
     },
   },
-  metadata: true,
-};
+  metadata: {
+    select: {
+      id: true,
+      name: true,
+    },
+  },
+} satisfies Prisma.RecipeSelect;
 
 // Utility function to handle ingredient creation and linking
 export async function handleRecipeIngredients(
@@ -169,6 +191,7 @@ export async function createRecipe(
 ) {
   const parsedRecipe = parseRecipe(input.markdown);
   const frontmatter = parseFrontmatter(input.markdown);
+  console.log(frontmatter.parsed);
   const recipe = await ctx.db.recipe.create({
     data: {
       markdown: input.markdown,
@@ -181,6 +204,7 @@ export async function createRecipe(
           name: parsedRecipe.title || "Untitled Recipe",
           summary: parsedRecipe.description || "",
           cuisine: frontmatter.parsed.cuisine || [],
+          source: frontmatter.parsed.source || null,
         },
       },
       history: {
@@ -201,7 +225,7 @@ export async function createRecipe(
       ctx,
       recipe.id,
       parsedRecipe,
-      recipe.metadataId || undefined
+      recipe.metadata?.id || undefined
     );
   } catch (error) {
     console.error("Error adding ingredients:", error);
@@ -209,3 +233,68 @@ export async function createRecipe(
 
   return recipe;
 } 
+
+export async function updateRecipe(
+  ctx: TrpcContext,
+  input: {
+    id: string,
+    bookId: string,
+    markdown: string,
+    draft?: boolean
+  }
+) {
+  const parsedRecipe = parseRecipe(input.markdown);
+  const frontmatter = parseFrontmatter(input.markdown);
+
+  // Fetch the existing recipe
+  const recipe = await ctx.db.recipe.findUnique({
+    where: { id: input.id },
+    include: { metadata: true }
+  });
+
+  if (!recipe) {
+    throw new Error("Recipe not found");
+  }
+
+  // Update the recipe
+  const updatedRecipe = await ctx.db.recipe.update({
+    where: { id: input.id },
+    data: {
+      markdown: input.markdown,
+      draft: input.draft,
+      version: recipe.version + 1,
+      metadata: {
+        update: {
+          name: parsedRecipe.title || "Untitled Recipe",
+          summary: parsedRecipe.description || "",
+          cuisine: frontmatter.parsed.cuisine || [],
+          source: frontmatter.parsed.source || null,
+        }
+      },
+      history: {
+        create: {
+          markdown: input.markdown,
+          version: recipe.version + 1,
+        }
+      }
+    },
+    select: {
+      ...recipeSelect,
+      history: true,
+    }
+  });
+
+  try {
+    await deleteRecipeIngredients(ctx, updatedRecipe.id);
+    await handleRecipeIngredients(
+      ctx,
+      updatedRecipe.id,
+      parsedRecipe,
+      updatedRecipe.metadata?.id || undefined
+    );
+  } catch (error) {
+    console.error("Error updating ingredients:", error);
+  }
+
+  return updatedRecipe;
+}

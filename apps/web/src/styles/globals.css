@@ -83,3 +83,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+::selection {
+  color: hsl(var(--primary-foreground));
+  background: hsl(var(--destructive));
+}

@@ -27,12 +27,16 @@ export default async function RecipeDetailPage({
     id: resolvedParams.id,
     bookId: resolvedParams.book
   });
+
   if (!recipe) {
     return <div>Recipe not found</div>;
   }
-
+  const metadata = await api.recipe.getRecipeMetadata({
+    id: resolvedParams.id,
+    bookId: resolvedParams.book
+  });
   return <>
-    <RecipeDetail recipe={recipe} book={resolvedParams.book} />
+    <RecipeDetail recipe={recipe} book={resolvedParams.book} recipeMetadata={metadata}  />
     <Fab recipe={recipe} />
    </>;
 }

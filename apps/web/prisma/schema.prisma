@@ -44,6 +44,7 @@ model Session {
 
 model User {
     id            String    @id @default(cuid())
+    handle        String    @unique @default(nanoid(5))
     name          String?
     email         String?   @unique
     emailVerified DateTime?
@@ -64,7 +65,7 @@ model VerificationToken {
 }
 
 model Book {
-    id        String    @id @unique
+    id        String    @id @unique // this is the slug
     name      String?
     markdown  String?
     createdAt DateTime  @default(now())
@@ -98,8 +99,8 @@ model Recipe {
     @@unique([bookId, slug])
     @@index([bookId, slug])
     @@index([bookId, id])
-    forksTo RecipeForks[] @relation("RecipeForksTo")
-    forksFrom RecipeForks[] @relation("RecipeForksFrom")
+    forksTo RecipeForks[] @relation("RecipeForksFrom")
+    forksFrom RecipeForks[] @relation("RecipeForksTo")
 }
 
 model RecipeMetadata {

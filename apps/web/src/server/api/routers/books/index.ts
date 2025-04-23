@@ -32,6 +32,17 @@ export const bookRouter = createTRPCRouter({
         },
       });
     }),
+  checkSlug: protectedProcedure
+    .input(z.object({ slug: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const existingBook = await ctx.db.book.findUnique({
+        where: { id: input.slug },
+      });
+      return {
+        available: !existingBook,
+        slug: input.slug
+      };
+    }),
 
   getById: protectedProcedure
     .input(z.object({ id: z.string() }))

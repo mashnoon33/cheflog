@@ -13,8 +13,12 @@ export default function AdminRecipeDetailPage() {
     bookId: params.book as string,
     version: version
   });
+  const { data: metadata, isLoading: metadataLoading } = api.recipe.getRecipeMetadata.useQuery({
+    id: params.id as string,
+    bookId: params.book as string,
+  });
 
-  if (isLoading) {
+  if (isLoading || metadataLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
         <Loader2 className="h-8 w-8 animate-spin" />
@@ -25,7 +29,10 @@ export default function AdminRecipeDetailPage() {
   if (!recipe) {
     return <div>Recipe not found</div>;
   }
+  if (!metadata) {
+    return <div>Metadata not found</div>;
+  }
 
-  return  <RecipeDetail recipe={recipe} book={params.book as string} />;
+  return  <RecipeDetail recipe={recipe} book={params.book as string} recipeMetadata={metadata} />;
 
 }

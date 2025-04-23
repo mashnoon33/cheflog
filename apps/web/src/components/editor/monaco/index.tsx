@@ -1,9 +1,9 @@
 "use client"
+import { useErrorStore } from '@/lib/stores/errorStore';
 import Editor, { OnMount, useMonaco } from '@monaco-editor/react';
 import type * as Monaco from 'monaco-editor';
-import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
 import { register, validate } from './faux-language-server';
-import { useErrorStore } from '@/lib/stores/errorStore';
 
 export interface RecipeEditorProps {
   initialValue?: string;
@@ -38,31 +38,45 @@ export const RecipeEditor = forwardRef<RecipeEditorRef, RecipeEditorProps>(({
     clearErrors();
   }, [monaco, clearErrors]);
 
+
+
+  const handleEditorValidation = useCallback((markers: Monaco.editor.IMarker[]) => {
+      if (!monaco || !editorRef.current) return;
+      const model = editorRef.current.getModel();
+      if (!model) return;
+      // Update markers with our custom validation
+      const problems = validate(monaco, model);
+      monaco.editor.setModelMarkers(model, 'recipe', problems);
+      // Count errors (only count Error severity, not Warning)
+      setErrors(problems);
+    }, [monaco, editorRef]);
+
+  const handleEditorChange = useCallback((value: string | undefined) => {
+    if (onChange) {
+      onChange(value);
+    }
+    // Only trigger validation if we have a value and the editor is ready
+    if (value && editorRef.current) {
+      // Use requestAnimationFrame to debounce validation
+      requestAnimationFrame(() => {
+        handleEditorValidation([]);
+      });
+    }
+  }, [onChange, handleEditorValidation]);
+
   const handleEditorDidMount: OnMount = (editor) => {
     editorRef.current = editor;
   };
 
-  const handleEditorValidation = (markers: Monaco.editor.IMarker[]) => {
-    if (!monaco || !editorRef.current) return;
-    
-    const model = editorRef.current.getModel();
-    if (!model) return;
-
-    // Update markers with our custom validation
-    const problems = validate(monaco, model);
-    monaco.editor.setModelMarkers(model, 'recipe', problems);
-
-    // Count errors (only count Error severity, not Warning)
-    setErrors(problems);
-  };
-
-  const handleEditorChange = (value: string | undefined) => {
-    if (onChange) {
-      onChange(value);
+  useEffect(() => {
+    if (monaco ) {
+      const timeout = setTimeout(() => {
+        handleEditorValidation([]);
+      }, 1000);
+      return () => clearTimeout(timeout);
     }
-    // Trigger validation on change
-    handleEditorValidation([]);
-  };
+  }, [monaco]);
+
 
   return (
     <Editor
@@ -72,7 +86,6 @@ export const RecipeEditor = forwardRef<RecipeEditorRef, RecipeEditorProps>(({
       theme="recipe-theme"
       onChange={handleEditorChange}
       onMount={handleEditorDidMount}
-      onValidate={handleEditorValidation}
       options={{
         minimap: { enabled: false },
         lineNumbers: 'on',

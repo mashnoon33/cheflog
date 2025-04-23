@@ -8,10 +8,13 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { api } from "@/trpc/react"
-import { Home, Plus, BookOpen, ArrowUpRight } from "lucide-react"
+import { Home, Plus, BookOpen, ArrowUpRight, Link } from "lucide-react"
 import { useEffect } from "react"
 import { useRouter, useParams } from "next/navigation";
 import { BookSwitcher } from "./book-switcher"
@@ -46,11 +49,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       title: "Home",
       url: activeBookId ? `/admin/${activeBookId}` : "/",
       icon: Home,
-    },
-    {
-      title: "Create Recipe",
-      url: `/admin/${activeBookId}/create`,
-      icon: Plus,
     },
     {
       title: "Public site",
@@ -91,7 +89,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={navItems} disabled={!activeBookId} />
+        <NavMain items={navItems} disabled={!activeBookId} activeBookId={activeBookId} />
         <NavRecipies recipes={recipeItems} />
       </SidebarContent>
       <SidebarFooter>

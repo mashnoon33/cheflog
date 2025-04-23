@@ -109,7 +109,7 @@ const validateFrontmatterKeys = (
       if (lineIndex !== -1) {
         problems.push({
           severity: monaco.MarkerSeverity.Error,
-          message: `Unknown frontmatter key: '${key}'. Allowed keys are: ${allowedKeys.join(', ')}`,
+          message: `Unknown frontmatter key: '${key}'.`,
           startLineNumber: lineIndex + 1,
           startColumn: 1,
           endLineNumber: lineIndex + 1,

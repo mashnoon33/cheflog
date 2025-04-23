@@ -4,8 +4,11 @@ import { create } from 'zustand'
 interface MonacoError {
   message: string
   severity: MarkerSeverity
-  line?: number
   column?: number
+  startLineNumber?: number
+  startColumn?: number
+  endLineNumber?: number
+  endColumn?: number
 }
 
 interface ErrorState {

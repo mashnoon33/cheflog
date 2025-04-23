@@ -15,19 +15,32 @@ import { api } from "@/trpc/react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "../ui/input";
-
+import { Label } from "../ui/label";
 interface CreateBookDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function CreateBookDialog({  open, onOpenChange }: CreateBookDialogProps) {
+export function CreateBookDialog({ open, onOpenChange }: CreateBookDialogProps) {
   const [slug, setSlug] = useState("");
   const [name, setName] = useState("");
   const [markdown, setMarkdown] = useState("");
   const [slugDirty, setSlugDirty] = useState(false);
   const router = useRouter();
   const utils = api.useUtils();
+  const { data: slugCheck, isPending: isCheckingSlug } = api.book.checkSlug.useQuery(
+    { slug },
+    {
+      enabled: !!slug,
+      trpc: {
+        context: {
+          skipBatch: true,
+        }
+      },
+      staleTime: 1000 * 30, // 30 seconds
+      refetchOnWindowFocus: false,
+    }
+  );
   const { mutate: createBook, isPending } = api.book.create.useMutation({
     onSuccess: () => {
       toast.success("Book created successfully!");
@@ -66,7 +79,7 @@ export function CreateBookDialog({  open, onOpenChange }: CreateBookDialogProps)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-     
+
       <DialogContent>
         <form onSubmit={handleSubmit}>
           <DialogHeader>
@@ -77,7 +90,7 @@ export function CreateBookDialog({  open, onOpenChange }: CreateBookDialogProps)
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <label htmlFor="name">Name</label>
+              <Label htmlFor="name">Name</Label>
               <Input
                 id="name"
                 value={name}
@@ -90,7 +103,7 @@ export function CreateBookDialog({  open, onOpenChange }: CreateBookDialogProps)
               />
             </div>
             <div className="grid gap-2">
-              <label htmlFor="slug">Slug</label>
+              <Label htmlFor="slug">Slug</Label >
               <Input
                 id="slug"
                 value={slug}
@@ -101,12 +114,21 @@ export function CreateBookDialog({  open, onOpenChange }: CreateBookDialogProps)
                 placeholder="my-awesome-book"
                 required
               />
-              <p className="text-sm text-muted-foreground">
-                URL-friendly version of the name. Special characters will be removed and spaces converted to hyphens.
-              </p>
+              {!slug && <p className="text-muted-foreground text-sm">Dash-separated string with no spaces</p>}
+              {slug && (
+                <div className="text-sm">
+                  {isCheckingSlug ? (
+                    <p className="text-muted-foreground"><Loader2 className="mr-1 h-4 w-4 inline animate-spin" />Checking availability</p>
+                  ) : slugCheck?.available ? (
+                    <p className="text-green-600">✓ cheflog.app/<strong>{slugCheck?.slug}</strong> is available</p>
+                  ) : (
+                    <p className="text-red-600">✗ cheflog.app/<strong>{slugCheck?.slug}</strong>  is already taken</p>
+                  )}
+                </div>
+              )}
             </div>
             <div className="grid gap-2">
-              <label htmlFor="markdown">Description</label>
+              <Label htmlFor="markdown">Description</Label>
               <textarea
                 id="markdown"
                 value={markdown}

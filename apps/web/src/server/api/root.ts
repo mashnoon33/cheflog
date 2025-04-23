@@ -3,7 +3,7 @@ import { bookRouter } from "./routers/books";
 import { recipeRouter } from "./routers/recipes";
 import { scraperRouter } from "./routers/scraper";
 import { createTRPCRouter, createCallerFactory } from "./trpc";
-
+import { forkRouter } from "./routers/fork";  
 /**
  * This is the primary router for your server.
  *
@@ -11,6 +11,7 @@ import { createTRPCRouter, createCallerFactory } from "./trpc";
  */
 export const appRouter = createTRPCRouter({
   recipe: recipeRouter,
+  fork: forkRouter,
   book: bookRouter,
   admin: adminRouter,
   scraper: scraperRouter,

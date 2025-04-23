@@ -1,13 +1,29 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
-import { getRecipes, getRecipeById, createRecipe, deleteRecipeIngredients, getRecipeByIdWithVersion } from "./utils";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "@/server/api/trpc";
+import {
+  getRecipes,
+  getRecipeById,
+  createRecipe,
+  deleteRecipeIngredients,
+  getRecipeByIdWithVersion,
+  updateRecipe,
+} from "./utils";
 import { recipeVersionsRouter } from "./versions";
 import { verifyUserOwnsBook } from "../admin/utils";
 
 export const recipeRouter = createTRPCRouter({
   // Main recipe operations
   getAll: protectedProcedure
-    .input(z.object({ bookId: z.string(), draft: z.boolean().optional().default(false) }))
+    .input(
+      z.object({
+        bookId: z.string(),
+        draft: z.boolean().optional().default(false),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       const book = await verifyUserOwnsBook(ctx, input.bookId);
       if (!book) {
@@ -33,9 +49,20 @@ export const recipeRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       return getRecipeById(ctx, input.id, input.bookId);
     }),
-
+    
+  getRecipeMetadata: protectedProcedure
+    .input(z.object({ id: z.string(), bookId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.recipeMetadata.findUnique({
+        where: {
+          recipeId: input.id,
+        },
+      });
+    }),
   getByIdWithVersion: protectedProcedure
-    .input(z.object({ id: z.string(), bookId: z.string(), version: z.number() }))
+    .input(
+      z.object({ id: z.string(), bookId: z.string(), version: z.number() }),
+    )
     .query(async ({ ctx, input }) => {
       return getRecipeByIdWithVersion(ctx, input.id, input.version);
     }),
@@ -62,26 +89,9 @@ export const recipeRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const recipe = await getRecipeById(ctx, input.id, input.bookId);
-      if (!recipe) {
-        throw new Error("Recipe not found");
-      }
-
-      return await ctx.db.recipe.update({
-        where: { id: recipe.id },
-        data: {
-          markdown: input.markdown,
-          draft: input.draft,
-          version: recipe.version + 1,
-          history: {
-            create: {
-              markdown: input.markdown,
-              version: recipe.version + 1,
-            },
-          },
-        },
-      });
+      return await updateRecipe(ctx, input);
     }),
+
 
   star: protectedProcedure
     .input(z.object({ id: z.string(), bookId: z.string() }))
@@ -93,12 +103,20 @@ export const recipeRouter = createTRPCRouter({
         },
       });
     }),
-  countStars: publicProcedure
+  unstar: protectedProcedure
+    .input(z.object({ id: z.string(), bookId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.star.delete({
+        where: {
+          userId_recipeId: { userId: ctx.session.user.id, recipeId: input.id },
+        },
+      });
+    }),
+  getStars: publicProcedure
     .input(z.object({ id: z.string(), bookId: z.string() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.db.star.aggregate({
+      return await ctx.db.star.findMany({
         where: { recipeId: input.id },
-        _count: true
       });
     }),
   delete: protectedProcedure
@@ -117,4 +135,4 @@ export const recipeRouter = createTRPCRouter({
 
   // Version control operations
   versions: recipeVersionsRouter,
-}); 
+});
