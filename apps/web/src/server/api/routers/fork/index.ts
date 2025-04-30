@@ -22,7 +22,7 @@ export const forkRouter = createTRPCRouter({
         const forkedRecipe = await createRecipe(ctx, {
             bookId,
             markdown: recipe.markdown,
-            draft: true,
+            draft: false,
         });
         await ctx.db.recipeForks.create({
             data: {

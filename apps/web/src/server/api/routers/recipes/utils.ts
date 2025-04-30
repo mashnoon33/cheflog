@@ -12,6 +12,7 @@ export const recipeSelect = {
   draft: true,
   public: true,
   slug: true,
+  commitMessage: true,
   updatedAt: true,
   createdBy: {
     select: {
@@ -65,6 +66,9 @@ export const recipeSelect = {
     select: {
       id: true,
       name: true,
+      summary: true,
+      cuisine: true,
+      source: true,
     },
   },
 } satisfies Prisma.RecipeSelect;
@@ -186,18 +190,19 @@ export async function createRecipe(
   input: {
     markdown: string,
     bookId: string,
-    draft?: boolean
+    draft?: boolean,
+    commitMessage?: string
   }
 ) {
   const parsedRecipe = parseRecipe(input.markdown);
   const frontmatter = parseFrontmatter(input.markdown);
-  console.log(frontmatter.parsed);
   const recipe = await ctx.db.recipe.create({
     data: {
       markdown: input.markdown,
       bookId: input.bookId,
       draft: input.draft,
       slug: frontmatter.parsed.slug || null,
+      commitMessage: input.commitMessage || "",
       createdById: ctx.session.user.id,
       metadata: {
         create: {
@@ -211,6 +216,7 @@ export async function createRecipe(
         create: {
           markdown: input.markdown,
           version: 1,
+          commitMessage: input.commitMessage || "",
         },
       },
     },
@@ -240,7 +246,8 @@ export async function updateRecipe(
     id: string,
     bookId: string,
     markdown: string,
-    draft?: boolean
+    draft?: boolean,
+    commitMessage?: string  
   }
 ) {
   const parsedRecipe = parseRecipe(input.markdown);
@@ -263,6 +270,7 @@ export async function updateRecipe(
       markdown: input.markdown,
       draft: input.draft,
       version: recipe.version + 1,
+      commitMessage: input.commitMessage || "",
       metadata: {
         update: {
           name: parsedRecipe.title || "Untitled Recipe",
@@ -275,6 +283,7 @@ export async function updateRecipe(
         create: {
           markdown: input.markdown,
           version: recipe.version + 1,
+          commitMessage: input.commitMessage || "",
         }
       }
     },

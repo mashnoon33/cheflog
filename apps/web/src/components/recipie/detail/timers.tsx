@@ -4,12 +4,14 @@ import React, { useEffect } from 'react';
 import { useTimerStore } from '@/store/timer';
 import { Timer as TimerComponent } from '@/components/ui/timer';
 import type { Timer } from '@/store/timer';
+import type { RouterOutputs } from '@/trpc/shared';
 
 interface TimersProps {
-  recipeId: string;
+  recipe: NonNullable<RouterOutputs["recipe"]["getById"]>;
 }
 
-export function Timers({ recipeId }: TimersProps) {
+export function Timers({ recipe }: TimersProps) {
+  const recipeId = recipe.slug ?? recipe.id;
   const { getTimersForRecipe, startTimer, pauseTimer, resumeTimer, stopTimer, deleteTimer } = useTimerStore();
   const [timers, setTimers] = React.useState<Timer[]>([]);
 

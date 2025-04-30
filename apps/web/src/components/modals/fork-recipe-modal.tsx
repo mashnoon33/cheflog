@@ -60,7 +60,6 @@ export function ForkRecipeModal({ recipeId, forkedFromBookId, open, onOpenChange
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-
       <DialogContent>
         <form onSubmit={handleSubmit}>
           <DialogHeader>

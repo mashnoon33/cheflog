@@ -1,25 +1,30 @@
 "use client"
-import { Pencil, Star, Utensils, Plus, DiamondPercentIcon } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ActionContainer, FloatingActionButton } from "@/components/ui/floating-action-button";
-import { RouterOutputs } from "@/trpc/react";
-import { useSession } from "next-auth/react";
-import { api } from "@/trpc/react";
-import { Badge } from "@/components/ui/badge";
-import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
 import { ForkRecipeModal } from "@/components/modals/fork-recipe-modal";
 import { Timers } from "@/components/recipie/detail/timers";
-import { TwoItems } from "@/components/ui/kv";
-import { KeyValuePair } from "@/components/ui/kv";
-import { format } from "date-fns";
-import { RecipeOverlay } from "./recipe-overlay";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ActionContainer } from "@/components/ui/floating-action-button";
+import { KeyValuePair, TwoItems } from "@/components/ui/kv";
 import { Scaler } from "@/components/ui/scaler";
+import { useScaleStore } from "@/stores/scale-store";
+import { api, RouterOutputs } from "@/trpc/react";
+import { format } from "date-fns";
+import { DiamondPercentIcon, Pencil, Star, Utensils } from "lucide-react";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { RecipeOverlay } from "./recipe-overlay";
+import { NotificationBadge } from "@/components/ui/notification-badge";
+import { formatFractionDisplay } from "@/components/recipie/detail/ingredients/utils/render-ingedient-quanity";
+
 export function Fab({ recipe }: { recipe: NonNullable<RouterOutputs["recipe"]["getById"]> }) {
     const [forkModalOpen, setForkModalOpen] = useState(false);
-    const [scale, setScale] = useState(2);
-    const [showScaler, setShowScaler] = useState(false);
+    const [isScalerVisible, setIsScalerVisible] = useState(false);
+    const [scaleValue, setScaleValue] = useState(1);
+    const { getShowScaler, setShowScaler, toggleScaler, getScale } = useScaleStore();
+    const recipeId = recipe.slug ?? recipe.id;
+
     const { data: session, status } = useSession()
     const params = useParams();
     const router = useRouter();
@@ -55,39 +60,64 @@ export function Fab({ recipe }: { recipe: NonNullable<RouterOutputs["recipe"]["g
         }
     }
 
-    if (status !== "authenticated") {
-        return null
-    }
+    useEffect(() => {
+        setIsScalerVisible(getShowScaler(recipeId));
+        setScaleValue(getScale(recipeId));
+        const unsubscribe = useScaleStore.subscribe((state) => {
+            setIsScalerVisible(state.showScaler || (state.scales[recipeId] !== undefined && state.scales[recipeId] !== 1));
+            setScaleValue(state.scales[recipeId] ?? 1);
+        });
+        return () => unsubscribe();
+    }, [recipeId, getShowScaler, getScale]);
 
     return (
         <RecipeOverlay>
-            <Timers recipeId={recipe.id} />
-            {showScaler && <Scaler value={scale} onValueChange={setScale} />}
+            <Timers recipe={recipe} />
+            {isScalerVisible && <Scaler recipeId={recipeId} />}
             <ActionContainer>
-
-                <div className="flex flex-col  mb-4 text-sm">
-                    <div className="flex flex-row  text-neutral-400 text-sm mb-2">
+                <div className="flex flex-col text-sm">
+                    <div className="flex flex-row  text-neutral-400 text-xs mb-2">
                         <Link href={`/${recipe.bookId}`}>
                             <span className="">@{recipe.createdBy.handle}/{recipe.bookId}</span>
                         </Link>
                     </div>
-                    <TwoItems>
+                    {
+                        recipe.forksFrom.length > 0 && (
+                            <Link className="flex text-neutral-400 flex-row " href={`/${recipe.forksFrom[0]?.forkedFrom.bookId}/${recipe.forksFrom[0]?.forkedFrom.id}`}>
+                                <div className="flex flex-row gap-1 items-center text-xs">
+                                    <Utensils className="w-3 h-3" />
+                                    Forked from
+                                    <span className="text-xs text-white"> @{recipe.forksFrom[0]?.forkedFrom.createdBy.handle}/{recipe.forksFrom[0]?.forkedFrom.bookId} </span>
+                                </div>
+                            </Link>
+                        )
+                    }
+                    <TwoItems className="mt-4">
                         <KeyValuePair label="Created" value={format(recipe.createdAt, "MMM d, yyyy")} />
                         <KeyValuePair label="Updated" value={format(recipe.updatedAt, "MMM d, yyyy")} />
                     </TwoItems>
-
                 </div>
-                <div className="flex flex-col gap-2">
-
+                <div className="flex flex-col gap-2 mt-4">
                     <div className="flex flex-row gap-2 justify-end">
-                        <Button variant="muted" size="sm" onClick={() => setShowScaler(!showScaler)} disabled={showScaler}>
-                            <DiamondPercentIcon className="h-4 w-4" />
-                        </Button>
+                        <NotificationBadge
+                            label={formatFractionDisplay(scaleValue.toString()) ?? undefined}
+                            show={scaleValue !== 1}
+                        >
+                            <Button
+                                variant="muted"
+                                size="sm"
+                                onClick={toggleScaler}
+                                disabled={isScalerVisible}
+                            >
+                                <DiamondPercentIcon className="h-4 w-4" />
+                            </Button>
+                        </NotificationBadge>
                         {isOwner ? (
                             <Button
                                 variant="muted"
                                 onClick={handleEdit}
                                 size="sm"
+                                disabled={status !== "authenticated"}
                             >
                                 <Pencil className="h-4 w-4" />
                                 <span className="text-sm">Edit</span>
@@ -97,6 +127,7 @@ export function Fab({ recipe }: { recipe: NonNullable<RouterOutputs["recipe"]["g
                                 variant="muted"
                                 onClick={handleFork}
                                 size="sm"
+                                disabled={status !== "authenticated"}
                             >
                                 <Utensils className="h-3 w-3" />
                                 <span className="text-sm">Fork</span>
@@ -107,6 +138,7 @@ export function Fab({ recipe }: { recipe: NonNullable<RouterOutputs["recipe"]["g
                             variant="muted"
                             onClick={handleStar}
                             size="sm"
+                            disabled={status !== "authenticated"}
                         >
                             <Star className={`h-4 w-4  ${hasStarred ? 'fill-yellow-500' : ''}`} />
                             <span className="text-sm">Star</span>

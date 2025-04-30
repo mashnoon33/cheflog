@@ -15,8 +15,6 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { useRecipeStore } from "@/stores/recipe-store";
-import { toRecipeMarkdown } from "@/types/scraper";
 
 interface ScrapeRecipeDialogProps {
   open: boolean;
@@ -26,25 +24,8 @@ interface ScrapeRecipeDialogProps {
 
 export function ScrapeRecipeDialog({ open, onOpenChange, activeBookId }: ScrapeRecipeDialogProps) {
   const [url, setUrl] = useState("");
+  const [isNavigating, setIsNavigating] = useState(false);
   const router = useRouter();
-  const setRecipeMarkdown = useRecipeStore((state) => state.setRecipeMarkdown);
-
-  const { mutate: scrapeRecipe, isPending } = api.scraper.scrapeRecipe.useMutation({
-    onSuccess: (data) => {
-      toast.success("Recipe scraped successfully!");
-      const markdown = toRecipeMarkdown(data);
-      setRecipeMarkdown(markdown);
-      takeToActiveBook();
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
-
-  const takeToActiveBook = () => {
-    onOpenChange(false);
-    router.push(`/admin/${activeBookId}/create?url=${url}`);
-  }
 
   const { data: metadata } = api.scraper.getWebsiteMetadata.useQuery(
     { domain: url },
@@ -56,17 +37,24 @@ export function ScrapeRecipeDialog({ open, onOpenChange, activeBookId }: ScrapeR
 
   const handleScrape = () => {
     if (!url) return;
-    scrapeRecipe({ url });
+    setIsNavigating(true);
+    onOpenChange(false);
+    router.push(`/admin/${activeBookId}/create?url=${encodeURIComponent(url)}`);
   };
 
   useEffect(() => {
     if (!open) {
       setUrl("");
+      setIsNavigating(false);
     }
   }, [open]);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(newOpen) => {
+      if (!isNavigating) {
+        onOpenChange(newOpen);
+      }
+    }}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Import Recipe from URL</DialogTitle>
@@ -83,6 +71,7 @@ export function ScrapeRecipeDialog({ open, onOpenChange, activeBookId }: ScrapeR
               onChange={(e) => setUrl(e.target.value)}
               placeholder="https://example.com/recipe"
               required
+              disabled={isNavigating}
             />
             {metadata && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -95,13 +84,13 @@ export function ScrapeRecipeDialog({ open, onOpenChange, activeBookId }: ScrapeR
         <DialogFooter>
           <Button
             type="button"
-            disabled={isPending || !url}
+            disabled={!url || isNavigating}
             onClick={handleScrape}
           >
-            {isPending ? (
+            {isNavigating ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Scraping...
+                Importing...
               </>
             ) : (
               "Import Recipe"

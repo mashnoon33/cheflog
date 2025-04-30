@@ -11,7 +11,8 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import ScrollIntoViewIfNeeded from "react-scroll-into-view-if-needed";
+import { useEffect } from "react";
+
 export default function RecipeVersionLayout({
     children,
 }: {
@@ -25,57 +26,58 @@ export default function RecipeVersionLayout({
         bookId: params.book as string,
     });
 
+    useEffect(() => {
+        console.log('Layout re-rendered with version:', version);
+    }, [version]);
+
     return (
         <div className="h-screen flex flex-col relative overflow-y-auto" style={{ scrollbarGutter: 'stable' }}>
             <div className="flex-1">
                 {children}
             </div>
             {recipe && recipe.length > 0 && (
-                <FloatingActionButton >
+                <FloatingActionButton>
                     {recipe.map(r => (
-                        // @ts-expect-error - this is a workaround to get the data type to work
-                        <ScrollIntoViewIfNeeded key={r.version} active={version === r.version} options={{
-                            block: 'center',
-                            behavior: 'smooth',
-                        }}>
-                            <div
-                                key={r.version}
-                                className={`group p-3 cursor-pointer border border-neutral-900 hover:bg-neutral-800 bg-transparent rounded-md transition-colors mb-2 ${version === r.version ? " bg-gradient-to-r from-green-900/70 to-red-900/70" : ""}`}
-                                onClick={() => router.push(`/admin/${params.book}/${params.id}/${r.version}`)}
-                            >
-                                <div className="flex flex-row justify-between items-center">
-                                    <div>
-                                        <div className="text-sm font-medium text-neutral-200">Version {r.version}</div>
-                                        <div className="text-xs text-neutral-400 mt-1">
-                                            {formatDistanceToNow(new Date(r.createdAt))} ago
-                                        </div>
+                        <div
+                            key={r.version}
+                            data-active={version === r.version}
+                            className={`group p-3 cursor-pointer border border-neutral-900 hover:bg-neutral-800 bg-transparent rounded-md transition-colors mb-2 ${version === r.version ? " bg-gradient-to-r from-green-900/70 to-red-900/70" : ""}`}
+                            onClick={() => router.push(`/admin/${params.book}/${params.id}/${r.version}`)}
+                        >
+                            <div className="flex flex-row justify-between items-center">
+                                <div>
+                                    <div className="text-sm font-medium text-neutral-200">Version {r.version}</div>
+                                    <div className="text-xs text-neutral-400 mt-1">
+                                        {formatDistanceToNow(new Date(r.createdAt))} ago
                                     </div>
-
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <button className="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-neutral-200 focus:text-neutral-200 hover:bg-gray-700 rounded-md">
-                                                <MoreHorizontal className="h-4 w-4" />
-                                            </button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem>
-                                                <Lock className="mr-2 h-4 w-4" />
-                                                <span>Make Private</span>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem>
-                                                <Unlock className="mr-2 h-4 w-4" />
-                                                <span>Make Public</span>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem>
-                                                <Trash2 className="mr-2 h-4 w-4" />
-                                                <span>Delete Version</span>
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                                    <div className="text-xs text-neutral-400 mt-1">
+                                        {r.commitMessage}
+                                    </div>
                                 </div>
-                            </div>
-                        </ScrollIntoViewIfNeeded>
 
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <button className="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-neutral-200 focus:text-neutral-200 hover:bg-gray-700 rounded-md">
+                                            <MoreHorizontal className="h-4 w-4" />
+                                        </button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuItem>
+                                            <Lock className="mr-2 h-4 w-4" />
+                                            <span>Make Private</span>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem>
+                                            <Unlock className="mr-2 h-4 w-4" />
+                                            <span>Make Public</span>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem>
+                                            <Trash2 className="mr-2 h-4 w-4" />
+                                            <span>Delete Version</span>
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </div>
+                        </div>
                     ))}
                 </FloatingActionButton>
             )}

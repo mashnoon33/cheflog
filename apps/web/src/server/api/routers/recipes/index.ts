@@ -32,6 +32,28 @@ export const recipeRouter = createTRPCRouter({
       return getRecipes(ctx, input.bookId, undefined, input.draft);
     }),
 
+    getAllPublicForLandingPage: publicProcedure
+    .query(async ({ ctx }) => {
+      return await ctx.db.recipe.findMany({
+        where: {
+          public: true,
+        },
+        select: {
+          metadata: {
+            select: {
+              name: true,
+              summary: true,
+              cuisine: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 20,
+      });
+    }),
+
   getAllPublic: publicProcedure
     .input(z.object({ bookId: z.string() }))
     .query(async ({ ctx, input }) => {
@@ -59,6 +81,20 @@ export const recipeRouter = createTRPCRouter({
         },
       });
     }),
+  
+    getRecipeMetadataPublic: publicProcedure
+    .input(z.object({ idOrSlug: z.string(), bookId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.recipeMetadata.findFirst({
+        where: {
+          OR: [
+            { recipeId: input.idOrSlug },
+            { recipe: { slug: input.idOrSlug } }
+          ],
+        },
+      });
+    }),
+    
   getByIdWithVersion: protectedProcedure
     .input(
       z.object({ id: z.string(), bookId: z.string(), version: z.number() }),
@@ -73,6 +109,7 @@ export const recipeRouter = createTRPCRouter({
         markdown: z.string(),
         bookId: z.string(),
         draft: z.boolean().optional(),
+        commitMessage: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -86,9 +123,14 @@ export const recipeRouter = createTRPCRouter({
         bookId: z.string(),
         markdown: z.string(),
         draft: z.boolean().optional(),
+        commitMessage: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const recipe = await getRecipeById(ctx, input.id, input.bookId);
+      if (!recipe) {
+        throw new Error("Recipe not found");
+      }
       return await updateRecipe(ctx, input);
     }),
 

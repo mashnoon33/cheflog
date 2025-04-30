@@ -25,6 +25,7 @@ interface CreateRecipeFormProps {
 
 export function CreateRecipeForm({ mode = 'create', initialRecipe, bookId, id }: CreateRecipeFormProps) {
     const [recipe, setRecipe] = useState<string>(initialRecipe ?? defaultRecipe);
+    const [commitMessage, setCommitMessage] = useState<string>("");
     const editorRef = useRef<RecipeEditorRef>(null);
     const utils = api.useUtils();
     const router = useRouter();
@@ -32,6 +33,7 @@ export function CreateRecipeForm({ mode = 'create', initialRecipe, bookId, id }:
     const { mutate: createRecipe, isPending: isCreating } = api.recipe.create.useMutation({
         onSuccess: async (data) => {
             await utils.recipe.getAll.invalidate();
+            setCommitMessage("");
             toast.success("Recipe published successfully!");
             router.push(`/admin/${bookId}/${data.id}`);
         },
@@ -43,6 +45,7 @@ export function CreateRecipeForm({ mode = 'create', initialRecipe, bookId, id }:
     const { mutate: updateRecipe, isPending: isUpdating } = api.recipe.update.useMutation({
         onSuccess: async (data) => {
             await utils.recipe.getAll.invalidate();
+            setCommitMessage("");
             toast.success("Recipe updated successfully!");
         },
         onError: (error) => {
@@ -61,12 +64,14 @@ export function CreateRecipeForm({ mode = 'create', initialRecipe, bookId, id }:
                     bookId: bookId,
                     markdown: recipe,
                     draft: draft,
+                    commitMessage: commitMessage,
                 });
             } else {
                 createRecipe({
                     markdown: recipe,
                     bookId: bookId,
                     draft: draft,
+                    commitMessage: commitMessage,
                 });
             }
         } catch (error) {
@@ -118,6 +123,8 @@ export function CreateRecipeForm({ mode = 'create', initialRecipe, bookId, id }:
                 isUpdating={isUpdating}
                 mode={mode}
                 primaryButtonText={primaryButtonText}
+                commitMessage={commitMessage}
+                setCommitMessage={setCommitMessage}
             />
         </ResizablePanelGroup>
     );

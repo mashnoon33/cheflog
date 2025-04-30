@@ -16,7 +16,8 @@ function BaseCard({ children, className = "" }: { children: React.ReactNode; cla
 
 export function RecipeCard({ recipe, currentRoute }: { recipe: RecipeRes; currentRoute: string }) {
   return (
-    <Link href={`${currentRoute}/${recipe.id}`}>
+    // @ts-expect-error - recipe.slug is not always available
+    <Link href={`${currentRoute}/${recipe.slug ?? recipe.id}`}>
       <BaseCard>
         <div className="pb-2">
           <div className="flex flex-row items-center gap-2">

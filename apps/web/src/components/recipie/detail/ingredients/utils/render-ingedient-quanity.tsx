@@ -1,9 +1,12 @@
+"use client"
+
 import React from 'react';
 import type { Ingredient } from '@repo/parser';
-
+import { useScaleStore } from '@/stores/scale-store';
+import { RouterOutputs } from '@/trpc/react';
+import { useParams } from 'next/navigation';
 interface RenderIngredientQuantityProps {
   ingredient: Ingredient;
-  scaling?: number;
 }
 
 // Utility to convert decimal to a fraction string (e.g. 1.5 -> "1 1/2", 0.5 -> "1/2", 2 -> "2")
@@ -57,7 +60,7 @@ export function decimalToFraction(decimal: number, maxDenominator = 16): string 
 }
 
 // Helper to format fraction with sup/sub tags
-function formatFractionDisplay(fraction: string) {
+export function formatFractionDisplay(fraction: string) {
   if (!fraction.includes('/')) return fraction;
 
   const parts = fraction.split(' ');
@@ -83,9 +86,13 @@ function formatFractionDisplay(fraction: string) {
 
 export function RenderIngredientQuantity({
   ingredient,
-  scaling = 1,
 }: RenderIngredientQuantityProps) {
-  const quantity = Number(ingredient.quantity) * scaling;
+  const params = useParams();
+  const scale = useScaleStore<number>(
+    (state) => state.scales[params.id as string] ?? 1
+  );
+  
+  const quantity = Number(ingredient.quantity) * scale;
   const formattedQuantity = decimalToFraction(quantity);
 
   return (

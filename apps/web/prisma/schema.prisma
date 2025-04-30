@@ -3,6 +3,7 @@
 
 generator client {
     provider = "prisma-client-js"
+    previewFeatures = ["fullTextSearchPostgres"]
 }
 
 datasource db {
@@ -43,16 +44,16 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
-    handle        String    @unique @default(nanoid(5))
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    books         Book[]
-    recipes       Recipe[]
+    id             String    @id @default(cuid())
+    handle         String    @unique @default(nanoid(5))
+    name           String?
+    email          String?   @unique
+    emailVerified  DateTime?
+    image          String?
+    accounts       Account[]
+    sessions       Session[]
+    books          Book[]
+    recipes        Recipe[]
     starredRecipes Star[]
 }
 
@@ -65,42 +66,43 @@ model VerificationToken {
 }
 
 model Book {
-    id        String    @id @unique // this is the slug
+    id        String   @id @unique // this is the slug
     name      String?
     markdown  String?
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
-    user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId    String    
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId    String
     recipes   Recipe[]
-    public    Boolean   @default(true)
+    public    Boolean  @default(true)
 
     @@index([userId])
 }
 
 model Recipe {
-    id          String             @id @default(cuid())
-    markdown    String
-    version     Int                @default(1)
-    history     RecipeHistory[]
-    metadataId  String?
-    metadata    RecipeMetadata?
-    ingredients RecipeIngredient[]
-    createdAt   DateTime           @default(now())
-    updatedAt   DateTime           @updatedAt
-    createdBy   User               @relation(fields: [createdById], references: [id], onDelete: Cascade)
-    createdById String
-    book        Book               @relation(fields: [bookId], references: [id], onDelete: Cascade)
-    bookId      String
-    slug        String?
-    public      Boolean            @default(true)
-    draft       Boolean            @default(false)
-    stars       Star[]
+    id            String             @id @default(cuid())
+    markdown      String
+    version       Int                @default(1)
+    history       RecipeHistory[]
+    metadataId    String?
+    metadata      RecipeMetadata?
+    ingredients   RecipeIngredient[]
+    createdAt     DateTime           @default(now())
+    updatedAt     DateTime           @updatedAt
+    createdBy     User               @relation(fields: [createdById], references: [id], onDelete: Cascade)
+    createdById   String
+    book          Book               @relation(fields: [bookId], references: [id], onDelete: Cascade)
+    bookId        String
+    slug          String?
+    commitMessage String?            @default("")
+    public        Boolean            @default(true)
+    draft         Boolean            @default(false)
+    stars         Star[]
+    forksTo       RecipeForks[]      @relation("RecipeForksFrom")
+    forksFrom     RecipeForks[]      @relation("RecipeForksTo")
     @@unique([bookId, slug])
     @@index([bookId, slug])
     @@index([bookId, id])
-    forksTo RecipeForks[] @relation("RecipeForksFrom")
-    forksFrom RecipeForks[] @relation("RecipeForksTo")
 }
 
 model RecipeMetadata {
@@ -117,27 +119,27 @@ model RecipeMetadata {
 }
 
 model Ingredient {
-    id          String             @id @default(cuid())
-    name        String             @unique
-    recipes     RecipeIngredient[]
-    createdAt   DateTime           @default(now())
-    updatedAt   DateTime           @updatedAt
+    id        String             @id @default(cuid())
+    name      String             @unique
+    recipes   RecipeIngredient[]
+    createdAt DateTime           @default(now())
+    updatedAt DateTime           @updatedAt
 }
 
 model RecipeIngredient {
-    id           String          @id @default(cuid())
-    recipeId     String
-    ingredientId String
-    quantity     String?
-    important    Boolean         @default(false)
-    unit         String?
-    description  String?
-    recipe       Recipe          @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-    ingredient   Ingredient      @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
-    metadata     RecipeMetadata? @relation(fields: [metadataId], references: [id])
-    metadataId   String?
-    createdAt    DateTime        @default(now())
-    updatedAt    DateTime        @updatedAt
+    id            String          @id @default(cuid())
+    recipeId      String
+    ingredientId  String
+    quantity      String?
+    important     Boolean         @default(false)
+    unit          String?
+    description   String?
+    recipe        Recipe          @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+    ingredient    Ingredient      @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+    metadata      RecipeMetadata? @relation(fields: [metadataId], references: [id])
+    metadataId    String?
+    createdAt     DateTime        @default(now())
+    updatedAt     DateTime        @updatedAt
 
     @@unique([recipeId, ingredientId])
 }
@@ -150,19 +152,19 @@ model RecipeHistory {
     recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    commitMessage String?         @default("")
 
     @@unique([recipeId, version])
 }
 
-
 model RecipeForks {
-    id        String   @id @default(cuid())
+    id           String   @id @default(cuid())
     forkedFromId String
-    forkedFrom Recipe @relation("RecipeForksFrom", fields: [forkedFromId], references: [id], onDelete: Cascade)
-    forkedToId String
-    forkedTo Recipe @relation("RecipeForksTo", fields: [forkedToId], references: [id], onDelete: Cascade)
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    forkedFrom   Recipe   @relation("RecipeForksFrom", fields: [forkedFromId], references: [id], onDelete: Cascade)
+    forkedToId   String
+    forkedTo     Recipe   @relation("RecipeForksTo", fields: [forkedToId], references: [id], onDelete: Cascade)
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
 
     @@unique([forkedFromId, forkedToId])
 }

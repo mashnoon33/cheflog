@@ -155,7 +155,12 @@ const useTimerStore = create<TimerState>()(
         });
       },
       getTimersForRecipe: (recipeId: string) => {
-        const timers = get().timers.filter((timer) => timer.recipeId === recipeId);
+        // Filter timers that match either the slug or the ID
+        const timers = get().timers.filter((timer) => {
+          // If the stored recipeId is a slug, it will match directly
+          // If it's an ID, we need to check if it matches the current recipeId
+          return timer.recipeId === recipeId;
+        });
         console.log('Getting timers for recipe:', { recipeId, timers });
         return timers;
       },

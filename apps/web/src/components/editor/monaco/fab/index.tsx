@@ -3,15 +3,19 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FloatingActionButton } from "@/components/ui/floating-action-button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useErrorStore } from "@/lib/stores/errorStore";
 import { Loader2 } from "lucide-react";
-
+import { useState } from "react";
 interface EditorFABProps {
   onPublish: (draft?: boolean) => void;
   isCreating: boolean;
   isUpdating: boolean;
   mode: 'create' | 'edit' | 'draft';
   primaryButtonText: string;
+  commitMessage: string;
+  setCommitMessage: (commitMessage: string) => void;
 }
 
 export function EditorFAB({
@@ -19,7 +23,9 @@ export function EditorFAB({
   isCreating,
   isUpdating,
   mode,
-  primaryButtonText
+  primaryButtonText,
+  commitMessage,
+  setCommitMessage
 }: EditorFABProps) {
   const { errors } = useErrorStore();
 
@@ -46,6 +52,16 @@ export function EditorFAB({
             ))}
           </div>
         )}
+        <Textarea
+          placeholder="Commit Message"
+          value={commitMessage}
+          onChange={(e) => {
+            const value = e.target.value;
+            console.log(value);
+            setCommitMessage(value);
+          }}
+          className="w-full bg-neutral-800 text-white border-white/10"
+        />
         <div className='flex flex-row gap-2 justify-end'>
           <Button 
             variant="default" 

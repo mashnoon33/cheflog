@@ -3,7 +3,9 @@ import { bookRouter } from "./routers/books";
 import { recipeRouter } from "./routers/recipes";
 import { scraperRouter } from "./routers/scraper";
 import { createTRPCRouter, createCallerFactory } from "./trpc";
-import { forkRouter } from "./routers/fork";  
+import { forkRouter } from "./routers/fork";
+import { searchRouter } from "./routers/search";
+
 /**
  * This is the primary router for your server.
  *
@@ -15,6 +17,7 @@ export const appRouter = createTRPCRouter({
   book: bookRouter,
   admin: adminRouter,
   scraper: scraperRouter,
+  search: searchRouter,
 });
 
 // export type definition of API

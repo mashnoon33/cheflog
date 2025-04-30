@@ -81,12 +81,15 @@ export function NavMain({
               </DropdownMenu>
         </SidebarMenuItem>
       </SidebarMenu>
-
-      <ScrapeRecipeDialog 
-        open={isScrapeModalOpen} 
-        onOpenChange={setIsScrapeModalOpen}
-        activeBookId={activeBookId || ""  }
-      />
+     {
+      isScrapeModalOpen && (
+        <ScrapeRecipeDialog 
+          open={isScrapeModalOpen} 
+          onOpenChange={setIsScrapeModalOpen}
+          activeBookId={activeBookId || ""  }
+        />
+      )
+     }
     </>
   )
 }

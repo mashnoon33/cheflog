@@ -88,6 +88,10 @@ function SourceBadge({ source }: { source: string }) {
 }
 
 export function RecipeComponent({ recipe, version, recipeMetadata }: RecipeProps) {
+  console.log("find me");
+  console.log(recipe);
+  console.log("recipeMetadata");
+  console.log(recipeMetadata);
   return (
     <div className="flex flex-1 flex-col gap-1 pt-10 md:pt-20 h-[100%] px-4  @container">
       <div className="max-w-xl @lg:max-w-4xl px-5 mx-auto">
