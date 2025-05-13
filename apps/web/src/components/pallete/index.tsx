@@ -103,7 +103,7 @@ function AdminActions({ onClose }: { onClose: () => void }) {
         }}
       >
         <FileText className="mr-1 h-3 w-3 shrink-0 text-muted-foreground" />
-        <span>Create from template</span>
+        <span>Create from template {book ? `in ${book}` : ""}</span>
       </CommandItem>
       <CommandItem
         value="Create new recipe"
@@ -113,7 +113,7 @@ function AdminActions({ onClose }: { onClose: () => void }) {
         }}
       >
         <Plus className="mr-1 h-3 w-3 shrink-0" />
-        <span>Create new recipe</span>
+        <span>Create new recipe {book ? `in ${book}` : ""}</span>
       </CommandItem>
       <CommandItem
         value="Dashboard"
