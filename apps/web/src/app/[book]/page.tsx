@@ -8,18 +8,20 @@ export async function generateStaticParams() {
   }));
 }
 
-
-
-
 export default async function RecipesPage({
   params,
 }: {
-  params: Promise<{ book: string }>;
+  params: { book: string };
 }) {
-  const resolvedParams = await params;
-  const recipes = await api.recipe.getAllPublic({ bookId: resolvedParams.book });
-  const book = await api.book.getByIdPublic({ id: resolvedParams.book });
-  const currentRoute = `/${resolvedParams.book}`;
+  const book = await api.book.getByIdPublic({ id: params.book });
+
+  if (!book) {
+    return <div>Book not found</div>;
+  }
+
+  const recipes = await api.recipe.getAllPublic({ bookId: params.book });
+
+  const currentRoute = `/${params.book}`;
   return (
     <div className="mx-auto px-4 my-20 md:px-8">
       <div className="max-w-2xl sm:px-2 lg:max-w-7xl lg:px-8 py-16 sm:py-24">

@@ -16,6 +16,8 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { Switch } from "../ui/switch"
+
 interface CreateBookDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -26,6 +28,7 @@ export function CreateBookDialog({ open, onOpenChange }: CreateBookDialogProps) 
   const [name, setName] = useState("");
   const [markdown, setMarkdown] = useState("");
   const [slugDirty, setSlugDirty] = useState(false);
+  const [isPublic, setIsPublic] = useState(true);
   const router = useRouter();
   const utils = api.useUtils();
   const { data: slugCheck, isPending: isCheckingSlug } = api.book.checkSlug.useQuery(
@@ -64,7 +67,7 @@ export function CreateBookDialog({ open, onOpenChange }: CreateBookDialogProps) 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createBook({ slug, name, markdown });
+    createBook({ slug, name, markdown, public: isPublic });
   };
 
   useEffect(() => {
@@ -74,18 +77,18 @@ export function CreateBookDialog({ open, onOpenChange }: CreateBookDialogProps) 
       setSlug("");
       setMarkdown("");
       setSlugDirty(false);
+      setIsPublic(true);
     }
   }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-
       <DialogContent>
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Create a new book</DialogTitle>
             <DialogDescription>
-              Create a new book to organize your recipes. The slug will be used in the URL.
+              Books are a way to organize your recipes. They are public by default. Slug defines the URL of the book.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -127,7 +130,7 @@ export function CreateBookDialog({ open, onOpenChange }: CreateBookDialogProps) 
                 </div>
               )}
             </div>
-            <div className="grid gap-2">
+            {/* <div className="grid gap-2">
               <Label htmlFor="markdown">Description</Label>
               <textarea
                 id="markdown"
@@ -136,9 +139,21 @@ export function CreateBookDialog({ open, onOpenChange }: CreateBookDialogProps) 
                 placeholder="A brief description of your book..."
                 className="min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               />
-            </div>
+            </div> */}
           </div>
-          <DialogFooter>
+          <DialogFooter className="flex flex-col gap-2 justify-between w-full">
+            <div className="grid gap-2 w-full">
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="public"
+                  checked={isPublic}
+                  onCheckedChange={setIsPublic}
+                />
+                <Label htmlFor="public" className="cursor-pointer">
+                  {isPublic ? "Public" : "Private"}
+                </Label>
+              </div>
+            </div>
             <Button
               type="submit"
               disabled={isPending || !slug}

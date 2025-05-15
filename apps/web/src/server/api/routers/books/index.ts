@@ -1,6 +1,12 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "@/server/api/trpc";
 import { getBooks, getBookById } from "./utils";
+import { createRecipe } from "../recipes/utils";
+import { defaultRecipe } from "@/components/editor/monaco/const";
 
 export const bookRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -14,23 +20,42 @@ export const bookRouter = createTRPCRouter({
   create: protectedProcedure
     .input(
       z.object({
-        slug: z.string().regex(
-          /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-          "Must be a dash-separated string with no spaces",
-        ),
+        slug: z
+          .string()
+          .regex(
+            /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+            "Must be a dash-separated string with no spaces",
+          ),
         name: z.string().min(1, "Name is required"),
         markdown: z.string().optional(),
+        public: z.boolean().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.db.book.create({
+      const allBooks = await ctx.db.book.findMany({
+        where: {
+          userId: ctx.session.user.id,
+        },
+      });
+
+      const book = await ctx.db.book.create({
         data: {
           id: input.slug,
           name: input.name,
           markdown: input.markdown,
           userId: ctx.session.user.id,
+          public: input.public,
         },
       });
+
+      if (allBooks.length === 0) {
+        await createRecipe(ctx, {
+          bookId: book.id,
+          markdown: defaultRecipe,
+        });
+      }
+
+      return book;
     }),
   checkSlug: protectedProcedure
     .input(z.object({ slug: z.string() }))
@@ -40,7 +65,7 @@ export const bookRouter = createTRPCRouter({
       });
       return {
         available: !existingBook,
-        slug: input.slug
+        slug: input.slug,
       };
     }),
 
@@ -55,4 +80,4 @@ export const bookRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       return getBookById(ctx, input.id, true);
     }),
-}); 
+});

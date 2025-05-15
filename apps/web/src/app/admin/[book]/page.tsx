@@ -50,21 +50,8 @@ export default function AdminBookPage() {
               <p className="mt-2 text-xs text-slate-600 dark:text-slate-400">
                 Document your favorite dishes with ingredients, instructions, and notes
               </p>
-              <Button variant="outline" size="sm" className="mt-4 font-mono">
+              <Button variant="outline" size="sm" className="mt-4 font-mono" onClick={() => router.push(`/admin/${params.book}/create?template=true`)}>
                 Add Recipe
-              </Button>
-            </div>
-
-            <div className="flex h-full flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 p-8 text-center dark:border-slate-700 dark:bg-slate-800/50">
-              <div className="rounded-full bg-neutral-100 p-3 dark:bg-slate-800">
-                <FolderOpen className="h-6 w-6 text-slate-500" />
-              </div>
-              <h3 className="mt-4 font-mono text-sm font-medium">Create New Collection</h3>
-              <p className="mt-2 text-xs text-slate-600 dark:text-slate-400">
-                Organize recipes into collections like "Desserts" or "Quick Meals"
-              </p>
-              <Button variant="outline" size="sm" className="mt-4 font-mono">
-                Add Collection
               </Button>
             </div>
           </div>
