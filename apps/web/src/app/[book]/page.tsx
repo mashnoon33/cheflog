@@ -1,6 +1,10 @@
 import { RecipeCard } from "@/components/recipie/card";
 import { api, staticApi } from "@/trpc/server";
 
+export const dynamic = 'auto';
+export const dynamicParams = true;
+export const revalidate = false;
+
 export async function generateStaticParams() {
   const books = await staticApi.book.getAllPublic();
   return books.map(book => ({
@@ -8,20 +12,23 @@ export async function generateStaticParams() {
   }));
 }
 
+
 export default async function RecipesPage({
   params,
 }: {
-  params: { book: string };
+  params: Promise<{ book: string }>;
 }) {
-  const book = await api.book.getByIdPublic({ id: params.book });
+  const resolvedParams = await params;
+  const book = await api.book.getByIdPublic({ id: resolvedParams.book });
 
   if (!book) {
     return <div>Book not found</div>;
   }
 
-  const recipes = await api.recipe.getAllPublic({ bookId: params.book });
+  const recipes = await api.recipe.getAllPublic({ bookId: resolvedParams.book });
 
-  const currentRoute = `/${params.book}`;
+
+  const currentRoute = `/${resolvedParams.book}`;
   return (
     <div className="mx-auto px-4 my-20 md:px-8">
       <div className="max-w-2xl sm:px-2 lg:max-w-7xl lg:px-8 py-16 sm:py-24">
