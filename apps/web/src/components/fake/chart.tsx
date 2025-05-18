@@ -16,21 +16,23 @@ const chartConfig = {
     },
 } satisfies ChartConfig
 
+const chartData = [
+    { month: "January", desktop: Math.floor(Math.random() * 400) },
+    { month: "February", desktop: Math.floor(Math.random() * 400) },
+    { month: "March", desktop: Math.floor(Math.random() * 400) },
+    { month: "April", desktop: Math.floor(Math.random() * 400) },
+    { month: "May", desktop: Math.floor(Math.random() * 400) },
+    { month: "June", desktop: Math.floor(Math.random() * 400) },
+    { month: "July", desktop: Math.floor(Math.random() * 400) },
+    { month: "August", desktop: Math.floor(Math.random() * 400) },
+    { month: "September", desktop: Math.floor(Math.random() * 400) },
+    { month: "October", desktop: Math.floor(Math.random() * 400) },
+    { month: "November", desktop: Math.floor(Math.random() * 400) },
+    { month: "December", desktop: Math.floor(Math.random() * 400) }
+]
+
 export function FakeChart() {
-    const chartData = [
-        { month: "January", desktop: Math.floor(Math.random() * 400) },
-        { month: "February", desktop: Math.floor(Math.random() * 400) },
-        { month: "March", desktop: Math.floor(Math.random() * 400) },
-        { month: "April", desktop: Math.floor(Math.random() * 400) },
-        { month: "May", desktop: Math.floor(Math.random() * 400) },
-        { month: "June", desktop: Math.floor(Math.random() * 400) },
-        { month: "July", desktop: Math.floor(Math.random() * 400) },
-        { month: "August", desktop: Math.floor(Math.random() * 400) },
-        { month: "September", desktop: Math.floor(Math.random() * 400) },
-        { month: "October", desktop: Math.floor(Math.random() * 400) },
-        { month: "November", desktop: Math.floor(Math.random() * 400) },
-        { month: "December", desktop: Math.floor(Math.random() * 400) }
-    ]
+
 
     return (
         <ChartContainer config={chartConfig} className="mt-3">

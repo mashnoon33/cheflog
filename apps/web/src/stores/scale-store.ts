@@ -25,9 +25,7 @@ interface ScaleState {
   showScaler: boolean
   setScale: (recipeId: string, scale: number) => void
   getScale: (recipeId: string) => number
-  getShowScaler: (recipeId: string) => boolean
   setShowScaler: (show: boolean) => void
-  toggleScaler: () => void
 }
 
 export const useScaleStore = create<ScaleState>((set, get) => {
@@ -51,19 +49,9 @@ export const useScaleStore = create<ScaleState>((set, get) => {
       set({ scales: newScales });
     },
     getScale: (recipeId) => get().scales[recipeId] ?? 1,
-    getShowScaler: (recipeId) => {
-      const scale = get().scales[recipeId];
-      const showScaler = get().showScaler;
-      return showScaler || (scale !== undefined && scale !== 1);
-    },
     setShowScaler: (show) => {
       console.log('setShowScaler called:', { show });
       set({ showScaler: show });
-    },
-    toggleScaler: () => {
-      const currentState = get().showScaler;
-      console.log('toggleScaler called:', { currentState, newState: !currentState });
-      set((state) => ({ showScaler: !state.showScaler }));
     },
   };
 });

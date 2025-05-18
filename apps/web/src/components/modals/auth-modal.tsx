@@ -36,7 +36,7 @@ export function AuthModal() {
                                     <span className="sr-only">cheflog</span>
                                 </a>
                                 <h1 className="text-xl font-bold">Welcome to cheflog</h1>
-                                <p className="text-sm text-muted-foreground">Please sign in to access the admin dashboard</p>
+                                <p className="text-sm text-muted-foreground">Please sign in to access the notebook</p>
                             </div>
                       
                             <div className="grid gap-4 sm:grid-cols-2">

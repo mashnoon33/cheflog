@@ -8,17 +8,19 @@ import { RouterOutputs } from "@/trpc/react";
 import { parseRecipe } from "@repo/parser";
 import Link from "next/link";
 
-const ErrorView = () => (
-  <div className="container mx-auto py-6 text-center">
-    <h2 className="text-2xl font-bold mb-4">Recipe Not Found</h2>
-    <p className="mb-6 text-gray-600">
-      The recipe you're looking for doesn't exist or has been removed.
-    </p>
-    <Button asChild>
-      <Link href="/recipes">Browse Recipes</Link>
-    </Button>
-  </div>
-);
+export function ErrorView() {
+  return (
+    <div className="container mx-auto py-6 text-center">
+      <h2 className="text-2xl font-bold mb-4">Recipe Not Found</h2>
+      <p className="mb-6 text-gray-600">
+        The recipe you're looking for doesn't exist or has been removed.
+      </p>
+      <Button asChild>
+        <Link href="/recipes">Browse Recipes</Link>
+      </Button>
+    </div>
+  );
+}
 
 interface RecipeDetailProps {
   recipe: RouterOutputs["recipe"]["getById"] | RouterOutputs["recipe"]["getByIdWithVersion"];
@@ -26,22 +28,23 @@ interface RecipeDetailProps {
   book: string;
   isLoading?: boolean;
   error?: Error | null;
+  renderContext?: "demo" | "default"
 }
 
-export function RecipeDetail({ recipe, recipeMetadata,  error }: RecipeDetailProps) {
+export function RecipeDetail({ recipe, recipeMetadata,  error, renderContext }: RecipeDetailProps) {
   if (error || !recipe) return <ErrorView />;
   const parsedRecipe = parseRecipe(recipe.markdown);
   return (
     <div className="h-full w-full">
-      <RecipeComponent recipe={parsedRecipe} version={recipe.version} recipeMetadata={recipeMetadata} />
+      <RecipeComponent recipe={parsedRecipe} recipeMetadata={recipeMetadata} />
     </div>
   );
 }
 
 interface RecipeProps {
   recipe: Recipe;
-  version: number;
   recipeMetadata: Partial<RouterOutputs["recipe"]["getRecipeMetadata"]>
+  renderContext?: "demo" | "default"
 }
 
 function parseRecipeSource(url: string) {
@@ -87,21 +90,16 @@ function SourceBadge({ source }: { source: string }) {
   }
 }
 
-export function RecipeComponent({ recipe, version, recipeMetadata }: RecipeProps) {
-  console.log("find me");
-  console.log(recipe);
-  console.log("recipeMetadata");
-  console.log(recipeMetadata);
+export function RecipeComponent({ recipe, recipeMetadata, renderContext }: RecipeProps) {
+
   return (
     <div className="flex flex-1 flex-col gap-1 pt-10 md:pt-20 h-[100%] px-4  @container">
       <div className="max-w-xl @lg:max-w-4xl px-5 mx-auto">
         <div className="flex flex-row gap-1">
-          <Badge className="mb-2">
-            <span className="text-gray-300 ">version {version}</span>
-          </Badge>
+       
           {recipeMetadata?.source && <SourceBadge source={recipeMetadata.source} />}
         </div>
-        <h1 className="text-4xl dark:text-white font-bold">{recipe.title}</h1>
+        <h1 className="text-4xl dark:text-white font-bold mb-2">{recipe.title}</h1>
 
         {/* Description */}
         <div className="flex-col hidden @lg:flex ">
@@ -121,7 +119,7 @@ export function RecipeComponent({ recipe, version, recipeMetadata }: RecipeProps
             <Section key={index} section={section} />
           ))}
         </div>
-        <div className="min-h-[700px]"></div>
+        {renderContext === "default" && <div className="min-h-[700px]"></div>}
       </div>
     </div>
   );

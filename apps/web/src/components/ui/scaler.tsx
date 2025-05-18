@@ -3,7 +3,7 @@ import * as React from "react";
 import { CustomStepSlider } from "./custom-step-slider";
 import { ActionContainer } from "./floating-action-button";
 import { Button } from "./button";
-import { DiamondPercentIcon, RotateCcw, X } from "lucide-react";
+import { DiamondPercentIcon, Minus, RotateCcw, X } from "lucide-react";
 import { useScaleStore } from "@/stores/scale-store";
 const SCALE_STEPS = [0.125, 0.25, 0.5, 1, 2, 3, 4];
 
@@ -16,7 +16,7 @@ export function Scaler({
     recipeId,
     strictSteps = true,
 }: ScalerProps) {
-    const { toggleScaler, getScale, setScale } = useScaleStore();
+    const { getScale, setScale, setShowScaler } = useScaleStore();
     const [value, setValue] = React.useState(getScale(recipeId));
 
     // Update local state when scale changes
@@ -37,13 +37,13 @@ export function Scaler({
                         <div className="text-sm text-neutral-400 pb-2 flex flex-row gap-1 items-center"> <DiamondPercentIcon className="w-4 h-4 text-neutral-400" /> Scale recipe</div>
                     </div>
                     <div className="flex gap-2 items-start">
-                        <button className={`p-0 text-xs text-yellow-500 ${value === 1 ? "opacity-50" : ""}`} onClick={() => handleValueChange(1)} disabled={value === 1}>
+                        <button className={`text-xs text-yellow-500  p-1 rounded-full    ${value === 1 ? "opacity-50" : "hover:bg-neutral-100/20"}`} onClick={() => setScale(recipeId, 1)} disabled={value === 1}>
                             <RotateCcw className="w-4 h-4" />
                         </button>
-                        <button className="p-0 text-xs text-neutral-200" onClick={() => {
-                            toggleScaler();
+                        <button className=" text-xs text-neutral-200 hover:bg-neutral-100/20 p-1 rounded-full" onClick={() => {
+                            setShowScaler(false);
                         }}>
-                            <X className="w-4 h-4" />
+                            <Minus className="w-4 h-4" />
                         </button>
                     </div>
                 </div>

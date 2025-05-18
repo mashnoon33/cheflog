@@ -8,6 +8,7 @@ import { register, validate } from './faux-language-server';
 export interface RecipeEditorProps {
   initialValue?: string;
   onChange?: (value: string | undefined) => void;
+  renderContext?: 'demo' | 'default';
 }
 
 export interface RecipeEditorRef {
@@ -16,7 +17,8 @@ export interface RecipeEditorRef {
 
 export const RecipeEditor = forwardRef<RecipeEditorRef, RecipeEditorProps>(({ 
   initialValue,
-  onChange 
+  onChange,
+  renderContext = 'default'
 }, ref) => {
   const monaco = useMonaco();
   const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
@@ -77,13 +79,21 @@ export const RecipeEditor = forwardRef<RecipeEditorRef, RecipeEditorProps>(({
     }
   }, [monaco]);
 
+  useEffect(() => {
+    console.log('monaco', !!monaco);
+
+    if (monaco) {
+      console.log('setting theme', renderContext);
+      monaco.editor.setTheme(renderContext === 'demo' ? 'demo-theme' : 'recipe-theme');
+    }
+  }, [monaco, renderContext]);
+
 
   return (
     <Editor
-      className="h-screen z-10"
+      className={`z-10 ${renderContext === 'default' ? 'h-screen' : 'h-[750px]'}`}
       defaultLanguage="recipe"
       defaultValue={initialValue}
-      theme="recipe-theme"
       onChange={handleEditorChange}
       onMount={handleEditorDidMount}
       options={{
@@ -93,7 +103,8 @@ export const RecipeEditor = forwardRef<RecipeEditorRef, RecipeEditorProps>(({
         wordWrap: 'on',
         renderWhitespace: 'none',
         scrollBeyondLastLine: false,
-        padding: { top: 10, bottom: 200 },
+        padding: { top: 10, bottom: renderContext === 'demo' ? 0 : 200 },
+        readOnly: renderContext === 'demo'
       }}
     />
   );

@@ -7,11 +7,10 @@ import type { Timer } from '@/store/timer';
 import type { RouterOutputs } from '@/trpc/shared';
 
 interface TimersProps {
-  recipe: NonNullable<RouterOutputs["recipe"]["getById"]>;
+  recipeId: string;
 }
 
-export function Timers({ recipe }: TimersProps) {
-  const recipeId = recipe.slug ?? recipe.id;
+export function Timers({ recipeId }: TimersProps) {
   const { getTimersForRecipe, startTimer, pauseTimer, resumeTimer, stopTimer, deleteTimer } = useTimerStore();
   const [timers, setTimers] = React.useState<Timer[]>([]);
 
@@ -23,7 +22,6 @@ export function Timers({ recipe }: TimersProps) {
     // Subscribe to store changes
     const unsubscribe = useTimerStore.subscribe(
       (state) => {
-        console.log('Timers component received store update:', state);
         setTimers(state.timers.filter(timer => timer.recipeId === recipeId));
       }
     );

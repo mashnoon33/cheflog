@@ -28,30 +28,44 @@ export function registerLanguageConfiguration({ monaco }: RecipeLanguageServerDe
     }
   });
 
+  // Define the base theme rules
+  const baseThemeRules = [
+    { token: 'recipe-frontmatter-delimiter', foreground: '808080', fontStyle: 'bold' },
+    { token: 'recipe-frontmatter-key', foreground: '0451A5', fontStyle: 'bold' },
+    { token: 'recipe-frontmatter-colon', foreground: '0451A5' },
+    { token: 'recipe-frontmatter-value', foreground: '098658' },
+    { token: 'recipe-header', foreground: '569CD6', fontStyle: 'bold' },
+    { token: 'recipe-section', foreground: '569CD6' },
+    { token: 'recipe-subsection', foreground: '569CD6' },
+    { token: 'recipe-quantity', foreground: '4EC9B0' },
+    { token: 'recipe-description', foreground: '608B4E', fontStyle: 'italic' },
+    { token: 'recipe-step-number', foreground: 'CE9178' },
+    { token: 'recipe-important', foreground: 'FF0000', fontStyle: 'bold' },
+    { token: 'recipe-time', foreground: '0066CC', fontStyle: 'bold' },
+    { token: 'recipe-temperature', foreground: 'CE9178', fontStyle: 'bold' },
+  ];
+
   // Define the recipe language theme
   monaco.editor.defineTheme('recipe-theme', {
     base: 'vs',
     inherit: true,
-    rules: [
-      { token: 'recipe-frontmatter-delimiter', foreground: '808080', fontStyle: 'bold' },
-      { token: 'recipe-frontmatter-key', foreground: '0451A5', fontStyle: 'bold' },
-      { token: 'recipe-frontmatter-colon', foreground: '0451A5' },
-      { token: 'recipe-frontmatter-value', foreground: '098658' },
-      { token: 'recipe-header', foreground: '569CD6', fontStyle: 'bold' },
-      { token: 'recipe-section', foreground: '569CD6' },
-      { token: 'recipe-subsection', foreground: '569CD6' },
-      { token: 'recipe-quantity', foreground: '4EC9B0' },
-      { token: 'recipe-description', foreground: '608B4E', fontStyle: 'italic' },
-      { token: 'recipe-step-number', foreground: 'CE9178' },
-      { token: 'recipe-important', foreground: 'FF0000', fontStyle: 'bold' },
-      { token: 'recipe-time', foreground: '0066CC', fontStyle: 'bold' },
-      { token: 'recipe-temperature', foreground: 'CE9178', fontStyle: 'bold' },
-    ],
+    rules: baseThemeRules,
     colors: {
       'editor.background': '#f7f7f7',
     }
   });
-  monaco.editor.setTheme('recipe-theme');
+
+  // Define the demo theme with a white background
+  monaco.editor.defineTheme('demo-theme', {
+    base: 'vs',
+    inherit: true,
+    rules: baseThemeRules,
+    colors: {
+      'editor.background': '#ffffff',
+    }
+  });
+  
+  // monaco.editor.setTheme('recipe-theme');
 
   monaco.languages.setLanguageConfiguration('recipe', {
     brackets: [

@@ -89,7 +89,7 @@ export function RenderIngredientQuantity({
 }: RenderIngredientQuantityProps) {
   const params = useParams();
   const scale = useScaleStore<number>(
-    (state) => state.scales[params.id as string] ?? 1
+    (state) => state.scales[params.id as string ?? "demo"] ?? 1
   );
   
   const quantity = Number(ingredient.quantity) * scale;
