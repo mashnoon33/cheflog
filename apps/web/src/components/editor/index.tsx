@@ -114,7 +114,7 @@ export function CreateRecipeForm({ mode = 'create', initialRecipe, bookId, id }:
             <ResizablePanel defaultSize={70} >
                 {/* Preview Section */}
                 <div className="h-screen flex-1 flex flex-col overflow-scroll p-6 bg-white">
-                    <RecipeComponent recipe={parsedRecipe} version={1} recipeMetadata={frontMatterToRecipeMetadata(frontMatter.parsed)} />
+                    <RecipeComponent recipe={parsedRecipe}  recipeMetadata={frontMatterToRecipeMetadata(frontMatter.parsed)} />
                 </div>
             </ResizablePanel>
             <EditorFAB

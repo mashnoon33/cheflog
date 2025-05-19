@@ -130,8 +130,8 @@ function extractRecipeData(tree: Node): Recipe {
     } else if (node.type === "list") {
       const items = node.children?.map(item => getNodeText(item)) ?? [];
       // Check if this is an ingredients list or instructions
-      if (items[0]?.includes("[")) {
-        // Ingredients
+      if (items[0]?.match(/^\[/)) {
+        // Ingredients - must start with square brackets
         const ingredients = items.map(item => {
           try {
             return parseIngredient(item);
@@ -151,7 +151,10 @@ function extractRecipeData(tree: Node): Recipe {
         currentSection.ingredients.push(...ingredients);
       } else {
         // Instructions
-        currentSection.instructions.push(...items.map(item => item.trim()));
+        currentSection.instructions.push(...items.map(item => {
+          // Remove the number prefix if it exists (e.g. "1. ")
+          return item.replace(/^\d+\.\s*/, '').trim();
+        }));
       }
     }
   });

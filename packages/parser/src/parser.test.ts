@@ -18,7 +18,7 @@ A classic breakfast recipe for fluffy pancakes.
 - [1/4 cup] melted butter
 
 == Instructions
-1. Mix dry ingredients in a bowl
+1. Mix dry ingredients in a bowl for [1 minute]
 2. Whisk wet ingredients in another bowl
 3. Combine wet and dry ingredients
 4. Cook on a hot griddle until golden brown`;
@@ -65,7 +65,7 @@ A classic breakfast recipe for fluffy pancakes.
     const instructionsSection = recipe.sections[2];
     expect(instructionsSection.title).toBe("Instructions");
     expect(instructionsSection.instructions.length).toBe(4);
-    expect(instructionsSection.instructions[0]).toBe("Mix dry ingredients in a bowl");
+    expect(instructionsSection.instructions[0]).toBe("Mix dry ingredients in a bowl for [1 minute]");
   });
 
   it('should parse ingredients with important flag and descriptions', async () => {
