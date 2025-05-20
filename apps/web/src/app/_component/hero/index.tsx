@@ -7,7 +7,7 @@ import { parseRecipe } from "@repo/parser"
 import { useRef, useState } from "react"
 import { actualRecipe } from "./const"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-
+import { ActiveDevWarning } from "./active-dev-warning"
 export function Hero() {
   const [recipe, setRecipe] = useState(actualRecipe);
   const [view, setView] = useState<'recipe' | 'editor'>('recipe');
@@ -22,6 +22,7 @@ export function Hero() {
 
   return (
     <div className="flex flex-col gap-2 w-full ">
+      <ActiveDevWarning />
       <Card className=" overflow-y-auto">
         <div className="relative">
           <div className="flex justify-end m-4 absolute top-0 right-0 z-20">

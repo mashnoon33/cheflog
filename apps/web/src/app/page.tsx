@@ -41,6 +41,7 @@ export default async function Home() {
           />
 
           <Paths />
+      
           <Construction />
         </div>
       </main>
