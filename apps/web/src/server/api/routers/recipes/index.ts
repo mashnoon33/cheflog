@@ -177,4 +177,26 @@ export const recipeRouter = createTRPCRouter({
 
   // Version control operations
   versions: recipeVersionsRouter,
+
+  getByBookId: publicProcedure
+    .input(z.object({ bookId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.recipe.findMany({
+        where: { bookId: input.bookId },
+        orderBy: { updatedAt: "desc" },
+        take: 5,
+        select: {
+          id: true,
+          slug: true,
+          updatedAt: true,
+          version: true,
+          metadata: {
+            select: {
+              name: true,
+              summary: true,
+            },
+          },
+        },
+      });
+    }),
 });

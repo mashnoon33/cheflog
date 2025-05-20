@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ContainerTextFlip } from "@/components/ui/text-flip";
 import Link from "next/link";
-
+import { FiGithub } from "react-icons/fi";
 export function TitleSection() {
     return (
         <div className="flex flex-col gap-4 w-full  text-center relative">
@@ -18,6 +18,9 @@ export function TitleSection() {
                 </Link>
                 <Link href="/public">
                     <Button variant="outline">Public cookbooks</Button>
+                </Link>
+                <Link href="https://github.com/mashnoon33/cheflog">
+                    <Button variant="outline"><FiGithub className="w-4 h-4" /> </Button>
                 </Link>
             </div>
         </div>

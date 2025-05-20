@@ -52,10 +52,9 @@ export async function getDashboardData(ctx: TrpcContext, bookId: string) {
       metadata: true
     },
     orderBy: { updatedAt: "desc" },
-    take: 6, // Show last 6 recipes
+    take: 6,
   });
 
-  // Get last updated timestamp
   const lastUpdated = recentRecipes[0]?.updatedAt
     ? new Date(recentRecipes[0].updatedAt).toLocaleDateString()
     : "Never";

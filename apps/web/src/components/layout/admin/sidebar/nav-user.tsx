@@ -36,7 +36,7 @@ import { api } from "@/trpc/react"
 import { signOut } from "next-auth/react"
 import { useEffect } from "react"
 import { createZipFromBooks, downloadZip, processZipFile } from "./utils"
-
+import { useRouter } from "next/navigation";
 export function NavUser({
   user,
 }: {
@@ -46,6 +46,7 @@ export function NavUser({
     avatar: string
   }
 }) {
+  const router = useRouter();
   const { isMobile } = useSidebar()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const {mutate: initExportData, data: exportData} = api.admin.exportData.useMutation()
@@ -163,21 +164,21 @@ export function NavUser({
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-                <DropdownMenuItem>
+                {/* <DropdownMenuItem>
                   <Sparkles />
                   Upgrade to Pro
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-                <DropdownMenuItem>
+                {/* <DropdownMenuItem>
                   <BadgeCheck />
                   Account
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <CreditCard />
                   Billing
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
                 <DropdownMenuItem onClick={handleExportData}>
                   <ExternalLink />
                   Export Data
@@ -188,7 +189,10 @@ export function NavUser({
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => signOut()}>
+              <DropdownMenuItem onClick={async () => {
+                await signOut()
+                router.push("/")
+              }}>
                 <LogOut />
                 Log out
               </DropdownMenuItem>

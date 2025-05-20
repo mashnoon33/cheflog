@@ -1,16 +1,14 @@
 import { auth } from "@/server/auth";
 import { HydrateClient } from "@/trpc/server";
-import { CircleDashed } from "lucide-react";
 import { redirect } from "next/navigation";
-import { Hero } from "./_component/hero";
-import { FeaturesCard, TimerCard } from "./_component/features/card";
-import { TitleSection } from "./_component/title";
 import { AppBar } from "./_component/appbar";
 import { FeatureSection } from "./_component/features";
-import { FeatureHeader } from "./_component/features/header";
-import { Construction } from "./_component/features/construction";
 import { Admin } from "./_component/features/admin";
+import { Construction } from "./_component/features/construction";
+import { FeatureHeader } from "./_component/features/header";
+import { Hero } from "./_component/hero";
 import { Paths } from "./_component/paths";
+import { TitleSection } from "./_component/title";
 export default async function Home() {
   // Check if user is authenticated and redirect to admin page if they are
   const session = await auth();

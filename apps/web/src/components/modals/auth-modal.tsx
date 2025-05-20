@@ -2,16 +2,15 @@
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { GalleryVerticalEnd } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
 export function AuthModal() {
     const {  status } = useSession();
     const [open, setOpen] = useState(false);
-
+    const router = useRouter();
     useEffect(() => {
         if (status === "unauthenticated") {
             setOpen(true);
@@ -21,9 +20,14 @@ export function AuthModal() {
     }, [status]);
 
     return (
-        <Dialog open={open} onOpenChange={() => { }}>
-            <DialogContent className="sm:max-w-md">
-                <div className={cn("flex flex-col gap-6")}>
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        !open && router.push("/");
+      }}
+    >
+      <DialogContent className="sm:max-w-md">
+        <div className={cn("flex flex-col gap-6")}>
                         <div className="flex flex-col gap-6">
                             <div className="flex flex-col items-center gap-2">
                                 <a
