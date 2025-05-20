@@ -15,17 +15,17 @@ const featureList: {
         {
             feature: "timer",
             title: "Timer",
-            description: "Encoded timer in the recipe instruction spawn timer in the UI",
+            description: "Specify time and temperature in the syntax—automatically turned into interactive timers during prep.",
         },
         {
             feature: "scaling",
             title: "Scaling",
-            description: "Scale the recipe to the desired number of servings",
+            description: " Ingredient quantities are structured data, so changing servings or converting units happens instantly.",
         },
         {
             feature: "provenance",
             title: "Provenance",
-            description: "Track how a certain recipe was derived. Users can see version history, who it was forked from and/or which website it was originally published on.",
+            description: "Fork recipes, track changes, and trace origins. Know where a recipe came from—and how it evolved.",
         },
 
     ]
