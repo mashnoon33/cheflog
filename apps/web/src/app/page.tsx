@@ -9,6 +9,7 @@ import { AppBar } from "./_component/appbar";
 import { FeatureSection } from "./_component/features";
 import { FeatureHeader } from "./_component/features/header";
 import { Construction } from "./_component/features/construction";
+import { Admin } from "./_component/features/admin";
 export default async function Home() {
   // Check if user is authenticated and redirect to admin page if they are
   const session = await auth();
@@ -25,7 +26,9 @@ export default async function Home() {
           <Hero />
           {/* <FeatureHeader title="Encodings" description="Chefbook encodes recipes in a way that is easy to understand and use." /> */}
           <FeatureSection />
+          <Admin />
           <Construction />
+
         </div>
       </main>
     </HydrateClient>

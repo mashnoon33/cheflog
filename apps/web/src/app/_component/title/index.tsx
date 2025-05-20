@@ -10,8 +10,7 @@ export function TitleSection() {
             </span>
             <h1 className="text-4xl md:text-6xl lg:mt-10 mt-8 font-bold">Recipes reimagined </h1>
             <p className="max-w-2xl mx-auto  text-neutral-700">
-            Cheflog revolutionizes recipe management with an intuitive interface for versioning, editing, and scaling. 
-            Ideal for chefs and home cooks to innovate and share recipes.
+            A markdown-inspired recipe format, powerful text editor, and purpose-built CMS for collaboration, structure, and control.
             </p>
             <div className="flex flex-row gap-2 justify-center mt-5">
                 <Link href="/admin">

@@ -38,19 +38,26 @@ import { api } from "@/trpc/react"
 import { toast } from "sonner"
 import { ReactElement } from "react"
 
+export interface SidebarRecipe {
+  id: string
+  bookId: string
+  name: string
+  url: string
+  icon?: ReactElement
+  latestVersion: number
+  public: boolean
+  draft: boolean
+}
+
 export function NavRecipies({
   recipes,
+  selectedRecipeId,
+  onRecipeClick
 }: {
-  recipes: {
-    id: string
-    bookId: string
-    name: string
-    url: string
-    icon?: ReactElement
-    latestVersion: number
-    public: boolean
-    draft: boolean
-  }[]
+  recipes: SidebarRecipe[]
+  demo?: boolean
+  selectedRecipeId?: string
+  onRecipeClick?: (id: string) => void
 }) {
   const { isMobile } = useSidebar()
   const router = useRouter()
@@ -67,10 +74,13 @@ export function NavRecipies({
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Recipes</SidebarGroupLabel>
       <SidebarMenu >
+
         {recipes.map((item) => (
-          <SidebarMenuItem key={item.name} >
-            <SidebarMenuButton asChild isActive={pathname.includes(item.url)}>
-              <div className="cursor-pointer" onClick={() => router.push(item.url)}>
+          <SidebarMenuItem
+            key={item.name}
+          >
+            <SidebarMenuButton asChild isActive={selectedRecipeId === item.id || pathname.includes(item.url)}>
+              <div className="cursor-pointer" onClick={() => onRecipeClick ? onRecipeClick(item.id) : router.push(item.url)}>
                 <div className="flex gap-2 items-center">
                   {!item.public && <Lock className="h-3 w-3 text-muted-foreground" />}
                    <div className={`h-2 w-2 rounded-full ${!item.draft ? "bg-green-500" : "bg-yellow-500"}`} />

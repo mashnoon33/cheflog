@@ -1,84 +1,30 @@
-# Turborepo starter
+![Banner](apps/web/public/banner.png)
 
-This Turborepo starter is maintained by the Turborepo core team.
+# Cheflog
 
-## Using this example
+Cheflog is a language and platform for writing structured, version-controlled recipes. It extends Markdown with a lightweight syntax for ingredients, steps, time, temperature, and more—designed to be both human-readable and machine-parseable. Cheflog includes a smart editor with syntax highlighting, autocompletion, and validation, along with a git-like content management system that tracks changes, supports forking, and allows you to trace the provenance of any recipe. Structured data unlocks features like interactive timers, automatic unit conversions, and scalable portions—all while keeping your source clean and readable.
 
-Run the following command:
 
-```sh
-npx create-turbo@latest
+## Getting Started
+
+```bash
+git clone git@github.com:mashnoon33/cheflog.git
+cd cheflog
+yarn install
+cp apps/web/.env.example apps/web/.env
+yarn dev
 ```
 
-## What's inside?
+The application will be available at `http://localhost:3000`
 
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
+## Project Structure
 
 ```
-cd my-turborepo
-pnpm build
+apps/
+├── web/          # Cheflog Next.js spa
+packages/
+├── ui/           # Shared React component library
+├── eslint-config/ # Shared ESLint config
+├── typescript-config/ # Shared TypeScript config
+├── parser/       # Parser for the Cheflog language
 ```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-pnpm dev
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-npx turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)

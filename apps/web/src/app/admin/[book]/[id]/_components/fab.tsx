@@ -9,55 +9,26 @@ import { NotificationBadge } from "@/components/ui/notification-badge";
 import { RecipeOverlay } from "@/components/ui/recipe-overlay";
 import { Scaler } from "@/components/ui/scaler";
 import { useScaleStore } from "@/stores/scale-store";
-import { api, RouterOutputs } from "@/trpc/react";
+import { RouterOutputs } from "@/trpc/react";
 import { format } from "date-fns";
 import { DiamondPercentIcon, Utensils } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export function Fab({ recipe }: { recipe: NonNullable<RouterOutputs["recipe"]["getById"]> }) {
-    const [forkModalOpen, setForkModalOpen] = useState(false);
+// Only pick the used properties from recipe for now
+export function Fab({
+  recipe
+}: {
+  recipe: Pick<
+    NonNullable<RouterOutputs["recipe"]["getById"]>,
+    "id" | "draft" | "version" | "slug" | "createdAt" | "updatedAt" | "forksFrom"
+  >;
+}) {
     const [isScalerVisible, setIsScalerVisible] = useState(false);
     const [scaleValue, setScaleValue] = useState(1);
     const { setShowScaler, getScale } = useScaleStore();
     const recipeId = recipe.id;
 
-    const { data: session, status } = useSession()
-    const params = useParams();
-    const router = useRouter();
-    const { data: stars } = api.recipe.getStars.useQuery({ id: recipe.id, bookId: params.book as string })
-    const utils = api.useUtils()
-    const { mutate: star } = api.recipe.star.useMutation({
-        onSuccess: () => {
-            utils.recipe.getStars.invalidate({ id: recipe.id, bookId: recipe.bookId })
-        }
-    })
-    const { mutate: unstar } = api.recipe.unstar.useMutation({
-        onSuccess: () => {
-            utils.recipe.getStars.invalidate({ id: recipe.id, bookId: recipe.bookId })
-        }
-    })
-
-    const isOwner = recipe.createdBy.id === session?.user.id
-    const hasStarred = stars?.some(s => s.userId === session?.user.id)
-
-    const handleEdit = () => {
-        router.push(`/admin/${recipe.bookId}/${recipe.id}/edit`)
-    }
-
-    const handleFork = () => {
-        setForkModalOpen(true)
-    }
-
-    const handleStar = () => {
-        if (hasStarred) {
-            unstar({ id: recipe.id, bookId: recipe.bookId })
-        } else {
-            star({ id: recipe.id, bookId: recipe.bookId })
-        }
-    }
 
     useEffect(() => {
         setShowScaler(true);

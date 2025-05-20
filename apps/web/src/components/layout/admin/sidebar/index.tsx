@@ -1,22 +1,19 @@
 "use client"
 
-import * as React from "react"
 import { useSession } from "next-auth/react"
+import * as React from "react"
 
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarRail,
+  SidebarRail
 } from "@/components/ui/sidebar"
 import { api } from "@/trpc/react"
-import { Home, Plus, BookOpen, ArrowUpRight, Link } from "lucide-react"
+import { ArrowUpRight, BookOpen, Home } from "lucide-react"
+import { useParams, useRouter } from "next/navigation"
 import { useEffect } from "react"
-import { useRouter, useParams } from "next/navigation";
 import { BookSwitcher } from "./book-switcher"
 import { NavMain } from "./nav-main"
 import { NavRecipies } from "./nav-projects"
@@ -77,7 +74,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }, [params.book])
 
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon" {...props} >
       <SidebarHeader>
         <BookSwitcher
           books={books.map((book) => ({

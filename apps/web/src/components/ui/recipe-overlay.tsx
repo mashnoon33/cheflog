@@ -6,7 +6,7 @@ export function RecipeOverlay({ children, className }: { children: React.ReactNo
 
     return (
         <div className={cn(
-            "fixed bottom-8 right-8 w-80  z-50  ",
+            "absolute bottom-8 right-8 w-80  z-50  ",
             "animate-in fade-in-0 slide-in-from-bottom-2 duration-300"
         )}>
             <div className="flex flex-col gap-2">
