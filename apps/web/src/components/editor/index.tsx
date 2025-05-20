@@ -101,7 +101,6 @@ export function CreateRecipeForm({ mode = 'create', initialRecipe, bookId, id }:
     return (
         <ResizablePanelGroup direction="horizontal" className='h-full'>
             <ResizablePanel defaultSize={30}>
-                {/* Editor Section */}
                 <div className="h-screen flex flex-col ">
                     <RecipeEditor
                         ref={editorRef}
@@ -112,7 +111,6 @@ export function CreateRecipeForm({ mode = 'create', initialRecipe, bookId, id }:
             </ResizablePanel>
             <ResizableHandle withHandle />
             <ResizablePanel defaultSize={70} >
-                {/* Preview Section */}
                 <div className="h-screen flex-1 flex flex-col overflow-scroll p-6 bg-white">
                     <RecipeComponent recipe={parsedRecipe}  recipeMetadata={frontMatterToRecipeMetadata(frontMatter.parsed)} />
                 </div>

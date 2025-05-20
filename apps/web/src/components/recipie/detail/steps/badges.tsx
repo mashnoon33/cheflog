@@ -1,6 +1,6 @@
 "use client";
 import React from 'react';
-import { useTimerStore } from '@/store/timer';
+import { useTimerStore } from '@/stores/timer-store';
 import { useParams } from 'next/navigation';
 
 interface TimeBadgeProps {

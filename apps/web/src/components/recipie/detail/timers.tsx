@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect } from 'react';
-import { useTimerStore } from '@/store/timer';
+import { useTimerStore } from '@/stores/timer-store';
 import { Timer as TimerComponent } from '@/components/ui/timer';
-import type { Timer } from '@/store/timer';
+import type { Timer } from '@/stores/timer-store';
 import type { RouterOutputs } from '@/trpc/shared';
 
 interface TimersProps {

@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 
 export function Construction() {
   return (
-    <Card className="flex h-[300px] flex-col items-center justify-center px-5 text-muted-foreground text-sm">
+    <Card className="flex h-[300px] flex-col items-center text-center justify-center px-5 text-muted-foreground text-sm">
       <span>
         Oops you're here a bit early.
         :)){" "}

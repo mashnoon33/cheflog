@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState } from 'react';
-import { ProvenanceCard, ScalingCard, TimerCard } from './card';
+import { ProvenanceCard, ScalingCard, TimerCard } from './cards';
 import { Card, CardDescription, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
