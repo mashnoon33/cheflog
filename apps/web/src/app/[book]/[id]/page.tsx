@@ -8,10 +8,12 @@ export async function generateStaticParams() {
 
   for (const book of books) {
     const recipes = await staticApi.recipe.getAllPublic({ bookId: book.id });
-    params.push(...recipes.map((recipe: any) => ({
-      book: book.id,
-      id: recipe.id
-    })));
+    params.push(
+      ...recipes.map((recipe: any) => ({
+        book: book.id,
+        id: recipe.id,
+      })),
+    );
   }
 
   return params;
@@ -25,21 +27,26 @@ export default async function RecipeDetailPage({
   const resolvedParams = await params;
   const recipe = await api.recipe.getByIdPublic({
     id: resolvedParams.id,
-    bookId: resolvedParams.book
+    bookId: resolvedParams.book,
   });
 
   const metadata = await api.recipe.getRecipeMetadataPublic({
     idOrSlug: resolvedParams.id,
-    bookId: resolvedParams.book
+    bookId: resolvedParams.book,
   });
 
   if (!recipe || !metadata) {
     return <div>Recipe not found</div>;
   }
 
-
-  return <>
-    <RecipeDetail recipe={recipe} book={resolvedParams.book} recipeMetadata={metadata}  />
-    <Fab recipe={recipe} />
-   </>;
+  return (
+    <div className="flex h-full w-full flex-col ">
+      <Fab recipe={recipe} />
+      <RecipeDetail
+        recipe={recipe}
+        book={resolvedParams.book}
+        recipeMetadata={metadata}
+      />
+    </div>
+  );
 }

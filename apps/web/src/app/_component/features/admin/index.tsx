@@ -9,12 +9,12 @@ import { parseRecipe } from "@repo/parser";
 import { useState } from "react";
 import { RecipeComponent } from "@/components/recipie/detail";
 import { Fab } from "@/app/admin/[book]/[id]/_components/fab";
-
+import { v4 as uuidv4 } from 'uuid';
 
 // Define only the required fields for the Fab and NavRecipies components
 const parsedRecipes = recipes.map((recipe) => {
     const parsed = parseRecipe(recipe);
-    const id = crypto.randomUUID();
+    const id = uuidv4();
     const bookId = "demo-book";
     const createdAt = new Date();
     const updatedAt = new Date();

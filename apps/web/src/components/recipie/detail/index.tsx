@@ -31,12 +31,12 @@ interface RecipeDetailProps {
   renderContext?: "demo" | "default"
 }
 
-export function RecipeDetail({ recipe, recipeMetadata,  error, renderContext }: RecipeDetailProps) {
+export function RecipeDetail({ recipe, recipeMetadata,  error, renderContext = "default" }: RecipeDetailProps) {
   if (error || !recipe) return <ErrorView />;
   const parsedRecipe = parseRecipe(recipe.markdown);
   return (
     <div className="h-full w-full">
-      <RecipeComponent recipe={parsedRecipe} recipeMetadata={recipeMetadata} />
+      <RecipeComponent recipe={parsedRecipe} recipeMetadata={recipeMetadata} renderContext={renderContext} />
     </div>
   );
 }
@@ -66,8 +66,8 @@ function SourceBadge({ source }: { source: string }) {
     const faviconUrl = `https://www.google.com/s2/favicons?domain=${hostname}`;
     return (
       <Link href={source}>
-        <Badge className="mb-2 items-center gap-1">
-          <span className="text-gray-300 flex items-center">
+        <Badge className="mb-2 items-center gap-1  border-gray-200" variant="secondary">
+          <span className="text-gray-700 flex items-center  py-0.5">
             <img
               src={faviconUrl}
               alt={`${hostname} favicon`}
@@ -93,8 +93,8 @@ function SourceBadge({ source }: { source: string }) {
 export function RecipeComponent({ recipe, recipeMetadata, renderContext }: RecipeProps) {
 
   return (
-    <div className="flex flex-1 flex-col gap-1 pt-10 md:pt-20 h-[100%] px-4  @container">
-      <div className="max-w-xl @lg:max-w-4xl px-5 mx-auto">
+    <div className="flex flex-1 flex-col gap-1 pt-10 md:pt-20 h-[100%]  @container">
+      <div className="max-w-xl @lg:max-w-4xl px-4 mx-auto">
         <div className="flex flex-row gap-1">
        
           {recipeMetadata?.source && <SourceBadge source={recipeMetadata.source} />}
