@@ -94,7 +94,7 @@ export function Fab({
       <RecipeOverlay>
         <Timers recipeId={recipeId} />
       </RecipeOverlay>
-      <RecipeOverlay renderInline={isMobile}>
+      <RecipeOverlay renderContext={isMobile ? "inline" : "default"}>
         {!isMobile && <Timers recipeId={recipeId} />}
         {isScalerVisible && <Scaler recipeId={recipeId} />}
         <ActionContainer>

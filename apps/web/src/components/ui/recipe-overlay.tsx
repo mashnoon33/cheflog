@@ -2,17 +2,27 @@
 
 import { cn } from "@/lib/utils";
 
+type renderContext = "inline" | "default" | "demo";
 export function RecipeOverlay({
   children,
-  renderInline = false,
+  renderContext = "default",
 }: {
   children: React.ReactNode;
-  renderInline?: boolean;
+  renderContext?: renderContext;
 }) {
+  const renderContextClass = {
+    default: "fixed bottom-4 right-4 md:bottom-8 md:right-8 z-50 w-80 ",
+    inline: "px-4 z-1 mt-10 ",
+    demo: "absolute bottom-4 right-4 md:bottom-8 md:right-8 z-50 w-80 ",
+  }[renderContext];
+
   return (
+
+
+
     <div
       className={cn(
-        !renderInline ? "fixed bottom-4 right-4 md:bottom-8 md:right-8 z-50 w-80 " : "px-4 z-1 mt-10 ",
+        renderContextClass,
         "duration-300 animate-in fade-in-0 slide-in-from-bottom-2",
       )}
     >

@@ -17,12 +17,14 @@ import { useEffect, useState } from "react";
 
 // Only pick the used properties from recipe for now
 export function Fab({
-  recipe
+  recipe,
+  renderContext = "default"
 }: {
   recipe: Pick<
     NonNullable<RouterOutputs["recipe"]["getById"]>,
     "id" | "draft" | "version" | "slug" | "createdAt" | "updatedAt" | "forksFrom"
   >;
+  renderContext?: "default" | "inline" | "demo";
 }) {
     const [isScalerVisible, setIsScalerVisible] = useState(false);
     const [scaleValue, setScaleValue] = useState(1);
@@ -41,7 +43,7 @@ export function Fab({
     }, [recipeId, setShowScaler, getScale]);
 
     return (
-        <RecipeOverlay>
+        <RecipeOverlay renderContext={renderContext}>
             <Timers recipeId={recipeId} />
             {isScalerVisible && <Scaler recipeId={recipeId} />}
             <ActionContainer>

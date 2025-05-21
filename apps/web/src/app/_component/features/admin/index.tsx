@@ -83,7 +83,7 @@ export function Admin() {
                            recipe={selectedRecipe.parsed}
                            recipeMetadata={selectedRecipe.metadata}
                          />
-                         <Fab recipe={selectedRecipe} />
+                         <Fab recipe={selectedRecipe} renderContext="demo" />
                          </>
                        );
                    })()}
