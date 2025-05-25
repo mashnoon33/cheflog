@@ -1,7 +1,7 @@
 function WarningText() {
   return (
     <span>
-      ⚠️ Cheflog is in active development. Some features may not work as expected.
+      ⚠️ Cheflog is in active development. Some features may be unstable.
     </span>
   );
 }

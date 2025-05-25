@@ -26,10 +26,6 @@ export default function RecipeVersionLayout({
         bookId: params.book as string,
     });
 
-    useEffect(() => {
-        console.log('Layout re-rendered with version:', version);
-    }, [version]);
-
     return (
         <div className="h-screen flex flex-col relative overflow-y-auto" style={{ scrollbarGutter: 'stable' }}>
             <div className="flex-1">

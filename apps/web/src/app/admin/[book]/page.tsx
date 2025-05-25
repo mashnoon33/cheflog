@@ -34,9 +34,6 @@ export default function AdminBookPage() {
 
   return (
     <section className="container px-4 py-16 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-800">
-      <div className=" ">
-
-        <div className="">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {data?.recentRecipes?.map((recipe) => (
               <RecipeCard key={recipe.id} recipe={recipe} currentRoute={`/admin/${params.book}`} />
@@ -54,8 +51,6 @@ export default function AdminBookPage() {
                 Add Recipe
               </Button>
             </div>
-          </div>
-        </div>
       </div>
     </section>
   );

@@ -1,6 +1,7 @@
+import { cn } from "@/lib/utils";
 import { CircleDashed } from "lucide-react";
 
-type LogoVariant = "small" | "medium" | "large";
+type LogoVariant = "small" | "medium" | "large" | "logo";
 
 const sizeMap = {
     small: {
@@ -17,21 +18,27 @@ const sizeMap = {
         icon: "w-10 h-10",
         text: "text-4xl",
         gap: "gap-2"
+    },
+    logo: {
+        icon: "w-4 h-4",
+        text: "text-lg",
+        gap: "gap-0.5"
     }
 };
 
 interface LogoProps {
     variant?: LogoVariant;
+    className?: string;
 }
 
-export function Logo({ variant = "medium" }: LogoProps) {
+export function Logo({ variant = "medium", className }: LogoProps) {
     const { icon, text, gap } = sizeMap[variant];
     return (
-        <div className={`flex items-center justify-center ${gap}`}>
+        <div className={cn("flex items-center justify-center", gap, className)}>
             <CircleDashed className={icon} />
-            <h1 className={`${text} font-thin tracking-tight text-gray-900 animate-wave font-['Arial']`}>
+            {variant !== "logo" && <h1 className={cn(text, "font-thin tracking-tight text-gray-900 animate-wave font-['Arial']")}>
                 Cheflog
-            </h1>
+            </h1>}
         </div>
     );
 }

@@ -3,11 +3,9 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FloatingActionButton } from "@/components/ui/floating-action-button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useErrorStore } from "@/lib/stores/errorStore";
+import { useErrorStore } from "@/stores/errorStore";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
 interface EditorFABProps {
   onPublish: (draft?: boolean) => void;
   isCreating: boolean;
@@ -57,7 +55,6 @@ export function EditorFAB({
           value={commitMessage}
           onChange={(e) => {
             const value = e.target.value;
-            console.log(value);
             setCommitMessage(value);
           }}
           className="w-full bg-neutral-800 text-white border-white/10"

@@ -21,8 +21,6 @@ export default function AdminRecipeDetailPage() {
   }
 
   const parsedRecipe = parseRecipe(recipe.markdown);
-  // const parsedFrontmatter = parseFrontmatter(recipe.markdown);
-
 
   return (
     <div className="h-full w-full pb-[400px]">

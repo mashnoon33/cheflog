@@ -8,7 +8,8 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarRail
+  SidebarRail,
+  useSidebar
 } from "@/components/ui/sidebar"
 import { api } from "@/trpc/react"
 import { ArrowUpRight, BookOpen, Home } from "lucide-react"
@@ -18,6 +19,7 @@ import { BookSwitcher } from "./book-switcher"
 import { NavMain } from "./nav-main"
 import { NavRecipies } from "./nav-projects"
 import { NavUser } from "./nav-user"
+import { Logo } from "@/components/ui/logo"
 
 
 
@@ -76,6 +78,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props} >
       <SidebarHeader>
+        <SidebarLogo />
         <BookSwitcher
           books={books.map((book) => ({
             name: book.id,
@@ -100,5 +103,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
+  )
+}
+
+export function SidebarLogo() {
+  const {
+    state,
+  } = useSidebar()
+  return (
+    <Logo variant={state === "collapsed" ? "logo" : "small"} className={`${state != "collapsed" ? "px-2 mt-2 mb-3 gap-1" : "py-2"}`} />
   )
 }

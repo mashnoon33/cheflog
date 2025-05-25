@@ -39,7 +39,7 @@ export function BookSwitcher({
   const currentBookId = params.book as string
   const activeBook = books.find(book => book.name === currentBookId) || books[0]
   const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false)
-
+  const { open } = useSidebar()
   const handleCreateBook = () => {
     setIsCreateDialogOpen(true)
   }
@@ -48,7 +48,7 @@ export function BookSwitcher({
     <>
       {!activeBook && <Button variant="outline" onClick={handleCreateBook}>
         <Plus className="size-4" />
-        <div className="font-medium text-muted-foreground">Create Book</div>
+        {open && <div className="font-medium text-muted-foreground">Create Book</div>}
       </Button>}
 
       {activeBook && <SidebarMenu>

@@ -40,7 +40,6 @@ export default function CreatePage() {
         }
     }, [template, url, scrapeRecipe]);
 
-    // Show loading state while fetching data
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-screen">
@@ -49,7 +48,6 @@ export default function CreatePage() {
         );
     }
 
-    // Wait for initialRecipe to be set before rendering the form
     if (initialRecipe === null) {
         return null;
     }

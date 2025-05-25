@@ -1,5 +1,5 @@
 "use client"
-import { useErrorStore } from '@/lib/stores/errorStore';
+import { useErrorStore } from '@/stores/errorStore';
 import Editor, { OnMount, useMonaco } from '@monaco-editor/react';
 import type * as Monaco from 'monaco-editor';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';

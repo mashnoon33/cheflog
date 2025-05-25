@@ -5,7 +5,7 @@ import { ActionContainer } from "./floating-action-button";
 import { Button } from "./button";
 import { DiamondPercentIcon, Minus, RotateCcw, X } from "lucide-react";
 import { useScaleStore } from "@/stores/scale-store";
-const SCALE_STEPS = [0.125, 0.25, 0.5, 1, 2, 3, 4];
+const SCALE_STEPS = [0.125, 0.25, 0.33, 0.5, 1, 2, 3, 4];
 
 interface ScalerProps {
     recipeId: string;

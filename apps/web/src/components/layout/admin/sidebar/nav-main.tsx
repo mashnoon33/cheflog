@@ -4,6 +4,7 @@ import { FileText, Link2, MoreHorizontal, Pencil, Plus, type LucideIcon } from "
 import Link from "next/link"
 import { useState } from "react"
 
+import { ScrapeRecipeDialog } from "@/components/modals/scare-recipe-modal"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import {
   SidebarMenu,
@@ -13,7 +14,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { usePathname, useRouter } from "next/navigation"
-import { ScrapeRecipeDialog } from "@/components/modals/scare-recipe-modal"
 
 export function NavMain({
   items,
@@ -48,7 +48,7 @@ export function NavMain({
         ))}
         <SidebarMenuItem key="Create">
           <SidebarMenuButton asChild isActive={false} disabled={false}>
-            <Link href={`/admin/${activeBookId}/create`}>
+            <Link href={`/admin/${activeBookId}/create?template=true`}>
               <Plus />
               <span>Create</span>
             </Link>

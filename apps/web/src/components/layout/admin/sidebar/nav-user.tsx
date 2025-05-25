@@ -163,13 +163,13 @@ export function NavUser({
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                {/* <DropdownMenuItem>
+              {/* <DropdownMenuGroup>
+                <DropdownMenuItem>
                   <Sparkles />
                   Upgrade to Pro
-                </DropdownMenuItem> */}
+                </DropdownMenuItem>
               </DropdownMenuGroup>
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator /> */}
               <DropdownMenuGroup>
                 {/* <DropdownMenuItem>
                   <BadgeCheck />

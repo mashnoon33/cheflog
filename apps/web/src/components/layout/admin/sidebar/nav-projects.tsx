@@ -1,18 +1,16 @@
 "use client"
 
 import {
+  DiffIcon,
   Folder,
   Forward,
-  MoreHorizontal,
-  Trash2,
-  Pencil,
-  type LucideIcon,
-  Clock,
   History,
-  DiffIcon,
-  Lock
+  Lock,
+  MoreHorizontal,
+  Pencil,
+  Trash2
 } from "lucide-react"
-import { useRouter, usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 
 import {
   DropdownMenu,
@@ -35,8 +33,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { api } from "@/trpc/react"
-import { toast } from "sonner"
 import { ReactElement } from "react"
+import { toast } from "sonner"
 
 export interface SidebarRecipe {
   id: string
