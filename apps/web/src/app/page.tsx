@@ -24,7 +24,7 @@ export default async function Home() {
           <TitleSection />
           <Hero />
           <FeatureHeader
-            title="Smart recipes, real functionality."
+            title="Smart recipes, powerful functionality."
             description=" Cheflog recipes aren't just text—they're structured data. That means richer interactions, smarter tools, and features that go beyond static cookbooks."
           />
           <FeatureSection />
