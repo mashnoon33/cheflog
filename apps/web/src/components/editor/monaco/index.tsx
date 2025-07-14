@@ -80,10 +80,7 @@ export const RecipeEditor = forwardRef<RecipeEditorRef, RecipeEditorProps>(({
   }, [monaco]);
 
   useEffect(() => {
-    console.log('monaco', !!monaco);
-
     if (monaco) {
-      console.log('setting theme', renderContext);
       monaco.editor.setTheme(renderContext === 'demo' ? 'demo-theme' : 'recipe-theme');
     }
   }, [monaco, renderContext]);
@@ -96,6 +93,7 @@ export const RecipeEditor = forwardRef<RecipeEditorRef, RecipeEditorProps>(({
       defaultValue={initialValue}
       onChange={handleEditorChange}
       onMount={handleEditorDidMount}
+      theme={renderContext === 'demo' ? 'demo-theme' : 'recipe-theme'}
       options={{
         minimap: { enabled: false },
         lineNumbers: 'on',
@@ -104,11 +102,13 @@ export const RecipeEditor = forwardRef<RecipeEditorRef, RecipeEditorProps>(({
         renderWhitespace: 'none',
         scrollBeyondLastLine: false,
         padding: { top: 10, bottom: renderContext === 'demo' ? 0 : 200 },
-        readOnly: renderContext === 'demo'
+        readOnly: renderContext === 'demo',
+        fixedOverflowWidgets: true,
       }}
     />
   );
 });
+
 
 RecipeEditor.displayName = 'RecipeEditor';
 

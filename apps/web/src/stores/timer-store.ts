@@ -28,7 +28,6 @@ const useTimerStore = create<TimerState>()(
     (set, get) => ({
       timers: [],
       addTimer: (label: string, duration: number, recipeId: string) => {
-        console.log('Adding timer:', { label, duration, recipeId });
         const newTimer: Timer = {
           id: Math.random().toString(36).substring(7),
           label,
@@ -38,18 +37,14 @@ const useTimerStore = create<TimerState>()(
           recipeId,
         };
         set((state) => {
-          console.log('Current timers before add:', state.timers);
           const newState = {
             timers: [...state.timers, newTimer],
           };
-          console.log('New state after add:', newState);
           return newState;
         });
       },
       startTimer: (id: string) => {
-        console.log('Starting timer:', id);
         set((state) => {
-          console.log('Current timers before start:', state.timers);
           const newState = {
             timers: state.timers.map((timer) =>
               timer.id === id
@@ -63,12 +58,10 @@ const useTimerStore = create<TimerState>()(
                 : timer
             ),
           };
-          console.log('New state after start:', newState);
           return newState;
         });
       },
       pauseTimer: (id: string) => {
-        console.log('Pausing timer:', id);
         set((state) => {
           const timer = state.timers.find(t => t.id === id);
           if (!timer) return state;
@@ -77,7 +70,6 @@ const useTimerStore = create<TimerState>()(
           const elapsed = now - timer.startTime;
           const remaining = Math.max(0, timer.duration - elapsed);
 
-          console.log('Current timers before pause:', state.timers);
           const newState = {
             timers: state.timers.map((timer) =>
               timer.id === id
@@ -90,12 +82,10 @@ const useTimerStore = create<TimerState>()(
                 : timer
             ),
           };
-          console.log('New state after pause:', newState);
           return newState;
         });
       },
       resumeTimer: (id: string) => {
-        console.log('Resuming timer:', id);
         set((state) => {
           const timer = state.timers.find((t) => t.id === id);
           if (!timer) {
@@ -119,14 +109,11 @@ const useTimerStore = create<TimerState>()(
                 : t
             ),
           };
-          console.log('New state after resume:', newState);
           return newState;
         });
       },
       stopTimer: (id: string) => {
-        console.log('Stopping timer:', id);
         set((state) => {
-          console.log('Current timers before stop:', state.timers);
           const newState = {
             timers: state.timers.map((timer) =>
               timer.id === id
@@ -139,18 +126,14 @@ const useTimerStore = create<TimerState>()(
                 : timer
             ),
           };
-          console.log('New state after stop:', newState);
           return newState;
         });
       },
       deleteTimer: (id: string) => {
-        console.log('Deleting timer:', id);
-        set((state) => {
-          console.log('Current timers before delete:', state.timers);
+          set((state) => {
           const newState = {
             timers: state.timers.filter((timer) => timer.id !== id),
           };
-          console.log('New state after delete:', newState);
           return newState;
         });
       },
@@ -161,7 +144,6 @@ const useTimerStore = create<TimerState>()(
           // If it's an ID, we need to check if it matches the current recipeId
           return timer.recipeId === recipeId;
         });
-        console.log('Getting timers for recipe:', { recipeId, timers });
         return timers;
       },
     }),
@@ -190,12 +172,10 @@ const useTimerStore = create<TimerState>()(
 
 // Ensure the store is properly initialized on the client side
 if (typeof window !== 'undefined') {
-  console.log('Initializing store on client side');
   
   // Subscribe to store changes to ensure proper synchronization
   useTimerStore.subscribe(
     (state) => {
-      console.log('Store state changed:', state);
       return state.timers;
     }
   );

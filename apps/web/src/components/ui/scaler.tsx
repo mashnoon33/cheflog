@@ -37,7 +37,11 @@ export function Scaler({
                         <div className="text-sm text-neutral-400 pb-2 flex flex-row gap-1 items-center"> <DiamondPercentIcon className="w-4 h-4 text-neutral-400" /> Scale recipe</div>
                     </div>
                     <div className="flex gap-2 items-start">
-                        <button className={`text-xs text-yellow-500  p-1 rounded-full    ${value === 1 ? "opacity-50" : "hover:bg-neutral-100/20"}`} onClick={() => setScale(recipeId, 1)} disabled={value === 1}>
+                        <button className={`text-xs text-yellow-500  p-1 rounded-full    ${value === 1 ? "opacity-50" : "hover:bg-neutral-100/20"}`} onClick={() => {
+                            setScale(recipeId, 1);
+                            setValue(1);
+                            setShowScaler(false);
+                        }} disabled={value === 1}>
                             <RotateCcw className="w-4 h-4" />
                         </button>
                         <button className=" text-xs text-neutral-200 hover:bg-neutral-100/20 p-1 rounded-full" onClick={() => {

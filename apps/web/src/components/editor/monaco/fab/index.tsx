@@ -6,6 +6,8 @@ import { FloatingActionButton } from "@/components/ui/floating-action-button";
 import { Textarea } from "@/components/ui/textarea";
 import { useErrorStore } from "@/stores/errorStore";
 import { Loader2 } from "lucide-react";
+import { MarkerSeverity } from 'monaco-editor'
+
 interface EditorFABProps {
   onPublish: (draft?: boolean) => void;
   isCreating: boolean;
@@ -33,7 +35,7 @@ export function EditorFAB({
         <div className="flex flex-row gap-1 items-center text-sm mb-2">
           <div className={`h-2 w-2 rounded-full ${errors.length > 0 ? "bg-red-500" : "bg-green-500"}`} />
           <span className={`font-medium ${errors.length > 0 ? "text-red-500" : "text-green-500"}`}>
-            {errors.length > 0 ? 'Validation Errors' : 'No Validation Errors'}
+            {errors.length > 0 ? 'Problems' : 'Valid Recipe'}
           </span>
           {errors.length > 0 && (
             <Badge variant="destructive"  className="text-xs  rounded-full ">
@@ -42,10 +44,10 @@ export function EditorFAB({
           )}
         </div>
         {errors.length > 0 && (
-          <div className="flex flex-col gap-2 text-xs text-white font-mono">
+          <div className="flex flex-col gap-2 text-xs text-white font-mono mb-2">
             {errors.map((error) => (
-              <div key={error.message}>
-                {error.startLineNumber ? `Line ${error.startLineNumber}: ` : ''}{error.message}
+              <div key={error.message} className={` border-l-2 pl-1 text-white/80 ${error.severity === 8 ? "border-red-500" : "border-yellow-500"}`}>
+                {error.startLineNumber ? `${error.startLineNumber}: ` : ''}{error.message}
               </div>
             ))}
           </div>
@@ -64,7 +66,8 @@ export function EditorFAB({
             variant="default" 
             className='bg-green-700 hover:bg-green-600' 
             onClick={() => onPublish()}
-            disabled={isCreating || isUpdating || errors.length > 0}
+            disabled={isCreating || isUpdating || errors.filter(error => error.severity === 8).length > 0}
+            size="sm"
           >
             {(isCreating || isUpdating) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {primaryButtonText}

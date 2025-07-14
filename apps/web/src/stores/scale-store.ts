@@ -50,7 +50,6 @@ export const useScaleStore = create<ScaleState>((set, get) => {
     },
     getScale: (recipeId) => get().scales[recipeId] ?? 1,
     setShowScaler: (show) => {
-      console.log('setShowScaler called:', { show });
       set({ showScaler: show });
     },
   };
